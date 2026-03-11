@@ -1,0 +1,349 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── Nav (shared) ── */
+.patient-nav {
+    background: #fff;
+    box-shadow: 0 1px 16px rgba(0, 0, 0, 0.07);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.nav-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+}
+
+.nav-logo {
+    font-size: 1.3rem;
+    font-weight: 800;
+    color: #2563eb;
+    cursor: pointer;
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+    flex: 1;
+}
+
+.nav-links span {
+    color: #475569;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.97rem;
+    transition: color 0.2s;
+}
+
+.nav-links span:hover,
+.nav-links span.active {
+    color: #2563eb;
+}
+
+.logout-btn {
+    margin-left: auto;
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.logout-btn:hover {
+    background: #dc2626;
+}
+
+/* ── Page ── */
+.my-bookings-page {
+    min-height: 100vh;
+    background: #f8fafc;
+}
+
+.bookings-container {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 2.5rem 2rem;
+}
+
+/* ── Header ── */
+.bookings-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 1.5rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.bookings-header h1 {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 0.25rem;
+}
+
+.bookings-header p {
+    color: #94a3b8;
+    font-size: 0.95rem;
+}
+
+.new-booking-btn {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.new-booking-btn:hover {
+    background: #1d4ed8;
+}
+
+/* ── Filter Tabs ── */
+.filter-tabs {
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.filter-tab {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    color: #64748b;
+    padding: 0.5rem 1.1rem;
+    border-radius: 30px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    transition: all 0.2s;
+}
+
+.filter-tab.active {
+    border-color: #2563eb;
+    background: #2563eb;
+    color: #fff;
+}
+
+.tab-count {
+    background: rgba(0, 0, 0, 0.12);
+    padding: 0.1rem 0.5rem;
+    border-radius: 20px;
+    font-size: 0.78rem;
+}
+
+/* ── Booking Card ── */
+.bookings-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.booking-card {
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.06);
+    display: flex;
+    overflow: hidden;
+    transition: box-shadow 0.25s;
+}
+
+.booking-card:hover {
+    box-shadow: 0 8px 28px rgba(0, 0, 0, 0.1);
+}
+
+.booking-card-left {
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    padding: 1.5rem 1rem;
+    min-width: 80px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.booking-date-block {
+    text-align: center;
+    color: #fff;
+}
+
+.appt-day {
+    display: block;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    opacity: 0.8;
+}
+
+.appt-date-num {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+}
+
+.appt-month {
+    display: block;
+    font-size: 0.8rem;
+    opacity: 0.8;
+}
+
+.booking-card-body {
+    padding: 1.25rem 1.5rem;
+    flex: 1;
+}
+
+.booking-top-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.booking-doctor {
+    font-size: 1.1rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.15rem;
+}
+
+.booking-spec {
+    color: #64748b;
+    font-size: 0.88rem;
+}
+
+.status-badge {
+    padding: 0.3rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.booking-meta {
+    display: flex;
+    gap: 1.2rem;
+    flex-wrap: wrap;
+    font-size: 0.88rem;
+    color: #64748b;
+    margin-bottom: 0.6rem;
+}
+
+.booking-reason {
+    color: #475569;
+    font-size: 0.92rem;
+    background: #f8fafc;
+    padding: 0.6rem 1rem;
+    border-radius: 8px;
+    border-left: 3px solid #2563eb;
+    margin-bottom: 0.75rem;
+}
+
+.booking-footer-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.booked-on {
+    font-size: 0.82rem;
+    color: #94a3b8;
+}
+
+.cancel-appt-btn {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1.5px solid #fecaca;
+    padding: 0.4rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.cancel-appt-btn:hover:not(:disabled) {
+    background: #dc2626;
+    color: #fff;
+}
+
+.cancel-appt-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+/* ── Empty ── */
+.empty-state {
+    text-align: center;
+    padding: 5rem 2rem;
+    background: #fff;
+    border-radius: 20px;
+    box-shadow: 0 2px 14px rgba(0, 0, 0, 0.05);
+}
+
+.empty-state span {
+    font-size: 3.5rem;
+    display: block;
+    margin-bottom: 1rem;
+}
+
+.empty-state h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #0f172a;
+    margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+}
+
+.empty-state button {
+    background: #2563eb;
+    color: #fff;
+    border: none;
+    padding: 0.8rem 2rem;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+@media (max-width: 600px) {
+    .booking-card {
+        flex-direction: column;
+    }
+
+    .booking-card-left {
+        min-width: unset;
+        padding: 1rem;
+    }
+
+    .booking-date-block {
+        display: flex;
+        gap: 0.5rem;
+        align-items: baseline;
+    }
+
+    .nav-links {
+        display: none;
+    }
+}

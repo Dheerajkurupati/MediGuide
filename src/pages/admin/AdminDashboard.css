@@ -1,0 +1,453 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+* {
+    font-family: 'Inter', sans-serif;
+}
+
+/* ── Nav ── */
+.admin-page {
+    min-height: 100vh;
+    background: #f1f5f9;
+}
+
+.admin-nav {
+    background: #0f172a;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.admin-nav-inner {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 1rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.admin-logo {
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #10b981;
+}
+
+.admin-nav-right {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.admin-badge {
+    background: rgba(255, 255, 255, 0.1);
+    color: #e2e8f0;
+    padding: 0.4rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+}
+
+.admin-logout {
+    background: #ef4444;
+    color: #fff;
+    border: none;
+    padding: 0.5rem 1.1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.admin-logout:hover {
+    background: #dc2626;
+}
+
+/* ── Container ── */
+.admin-container {
+    max-width: 1440px;
+    margin: 0 auto;
+    padding: 2rem;
+}
+
+.admin-title {
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 1.5rem;
+}
+
+/* ── Stats ── */
+.stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 1.25rem 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+}
+
+.stat-icon {
+    font-size: 1.6rem;
+    width: 52px;
+    height: 52px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.stat-val {
+    font-size: 2rem;
+    font-weight: 800;
+    line-height: 1;
+    margin-bottom: 0.2rem;
+}
+
+.stat-lbl {
+    font-size: 0.82rem;
+    color: #64748b;
+    font-weight: 500;
+}
+
+/* ── Tabs ── */
+.admin-tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 1.25rem;
+    background: #fff;
+    padding: 0.5rem;
+    border-radius: 14px;
+    box-shadow: 0 1px 8px rgba(0, 0, 0, 0.05);
+    width: fit-content;
+}
+
+.admin-tab {
+    background: transparent;
+    border: none;
+    padding: 0.65rem 1.4rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #64748b;
+    transition: all 0.2s;
+}
+
+.admin-tab.active {
+    background: #0f172a;
+    color: #fff;
+}
+
+.admin-tab:hover:not(.active) {
+    background: #f1f5f9;
+    color: #0f172a;
+}
+
+/* ── Toolbar ── */
+.table-toolbar {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+}
+
+.search-box {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    padding: 0.65rem 1rem;
+    flex: 1;
+    min-width: 280px;
+}
+
+.search-box input {
+    border: none;
+    outline: none;
+    font-size: 0.97rem;
+    flex: 1;
+    background: transparent;
+}
+
+.toolbar-right {
+    display: flex;
+    gap: 0.75rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.clear-filter-btn {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.87rem;
+    font-weight: 600;
+    transition: all 0.2s;
+}
+
+.clear-filter-btn:hover {
+    background: #2563eb;
+    color: #fff;
+}
+
+.toolbar-right select {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.55rem 0.9rem;
+    font-size: 0.9rem;
+    outline: none;
+    background: #fff;
+    color: #0f172a;
+}
+
+/* ── Table ── */
+.table-wrap {
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+.data-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.9rem;
+}
+
+.data-table th {
+    background: #0f172a;
+    color: #e2e8f0;
+    padding: 0.9rem 1rem;
+    text-align: left;
+    font-size: 0.83rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.data-table td {
+    padding: 0.85rem 1rem;
+    border-bottom: 1px solid #f1f5f9;
+    vertical-align: middle;
+    color: #334155;
+}
+
+.data-table tr:last-child td {
+    border-bottom: none;
+}
+
+.data-table tbody tr:hover {
+    background: #f8fafc;
+}
+
+/* Cell types */
+.booking-id {
+    font-family: monospace;
+    font-size: 0.78rem;
+    background: #f1f5f9;
+    padding: 0.2rem 0.5rem;
+    border-radius: 6px;
+    color: #475569;
+}
+
+.patient-cell,
+.doctor-cell,
+.meta-cell {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+}
+
+.patient-cell strong,
+.doctor-cell strong {
+    color: #0f172a;
+}
+
+.patient-cell span,
+.doctor-cell span,
+.meta-cell span {
+    color: #94a3b8;
+    font-size: 0.82rem;
+}
+
+.reason-cell {
+    max-width: 180px;
+    color: #64748b;
+    font-size: 0.85rem;
+}
+
+.tbl-badge {
+    padding: 0.25rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    display: inline-block;
+}
+
+.wait-pos {
+    margin-left: 0.4rem;
+    font-size: 0.78rem;
+    color: #d97706;
+    background: #fffbeb;
+    padding: 0.1rem 0.4rem;
+    border-radius: 6px;
+}
+
+.cancel-reason {
+    margin-top: 0.3rem;
+    font-size: 0.78rem;
+    color: #dc2626;
+    font-style: italic;
+}
+
+.status-select {
+    border: 1.5px solid #e2e8f0;
+    border-radius: 8px;
+    padding: 0.35rem 0.6rem;
+    font-size: 0.85rem;
+    outline: none;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s;
+}
+
+.status-select:focus {
+    border-color: #2563eb;
+}
+
+.spec-tag {
+    background: #eff6ff;
+    color: #2563eb;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.avail-tag {
+    background: #f0fdf4;
+    color: #16a34a;
+    padding: 0.2rem 0.7rem;
+    border-radius: 20px;
+    font-size: 0.82rem;
+    font-weight: 600;
+}
+
+.appt-count {
+    font-weight: 700;
+    font-size: 1.1rem;
+}
+
+.view-btn {
+    background: #0f172a;
+    color: #fff;
+    border: none;
+    padding: 0.45rem 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.83rem;
+    font-weight: 600;
+    white-space: nowrap;
+    transition: background 0.2s;
+}
+
+.view-btn:hover {
+    background: #1e3a5f;
+}
+
+.empty-row {
+    text-align: center;
+    padding: 3rem;
+    color: #94a3b8;
+    font-size: 1rem;
+}
+
+.row-count {
+    text-align: right;
+    padding: 0.75rem 1.25rem;
+    font-size: 0.82rem;
+    color: #94a3b8;
+}
+
+@media (max-width: 1024px) {
+    .data-table {
+        display: block;
+        overflow-x: auto;
+    }
+}
+
+@media (max-width: 600px) {
+    .admin-container {
+        padding: 1rem;
+    }
+
+    .stats-row {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* ── Status locked (final state) ── */
+.status-locked {
+    color: #94a3b8;
+    font-size: 0.82rem;
+    font-weight: 600;
+    padding: 0.3rem 0.7rem;
+    background: #f1f5f9;
+    border-radius: 8px;
+    display: inline-block;
+}
+
+/* ── Doctor date picker ── */
+.doctor-date-picker {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    padding: 1rem 1.25rem;
+    border-bottom: 1px solid #f1f5f9;
+    background: #f8fafc;
+    flex-wrap: wrap;
+}
+
+.doctor-date-picker label {
+    font-weight: 600;
+    font-size: 0.95rem;
+    color: #334155;
+}
+
+.doctor-date-picker input[type="date"] {
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.92rem;
+    outline: none;
+    background: #fff;
+    color: #0f172a;
+    cursor: pointer;
+}
+
+.doctor-date-picker input[type="date"]:focus {
+    border-color: #2563eb;
+}
+
+.day-tag {
+    background: #0f172a;
+    color: #fff;
+    padding: 0.35rem 0.9rem;
+    border-radius: 20px;
+    font-size: 0.85rem;
+    font-weight: 700;
+}
