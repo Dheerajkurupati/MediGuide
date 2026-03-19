@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../utils/database';
+import { CrossIcon, ArrowLeftIcon } from '../components/Icons';
 import './AuthPages.css';
 
 const Login = () => {
@@ -28,7 +29,8 @@ const Login = () => {
         <div className="auth-page">
             <div className="auth-container">
                 <div className="auth-header">
-                    <h1>🏥 CityCare Hospital</h1>
+                    <div className="auth-logo-icon"><CrossIcon size={24} color="#fff" /></div>
+                    <h1>CityCare Hospital</h1>
                     <h2>Welcome Back</h2>
                     <p>Login to access your health dashboard</p>
                 </div>
@@ -65,7 +67,9 @@ const Login = () => {
                     Don't have an account? <button onClick={() => navigate('/register')} className="link-button">Register here</button>
                 </div>
 
-                <button onClick={() => navigate('/')} className="back-button">← Back to Home</button>
+                <button onClick={() => navigate('/')} className="back-button">
+                    <ArrowLeftIcon size={16} /> Back to Home
+                </button>
             </div>
         </div>
     );

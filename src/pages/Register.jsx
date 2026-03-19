@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { registerUser } from '../utils/database';
+import { CrossIcon, ArrowLeftIcon } from '../components/Icons';
 import './AuthPages.css';
 
 const Register = () => {
@@ -49,7 +50,8 @@ const Register = () => {
         <div className="auth-page">
             <div className="auth-container">
                 <div className="auth-header">
-                    <h1>🏥 CityCare Hospital</h1>
+                    <div className="auth-logo-icon"><CrossIcon size={24} color="#fff" /></div>
+                    <h1>CityCare Hospital</h1>
                     <h2>Create Your Account</h2>
                     <p>Join us for better healthcare guidance</p>
                 </div>
@@ -86,7 +88,7 @@ const Register = () => {
                             value={formData.phone}
                             onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
                             required
-                            placeholder="+1 (555) 123-4567"
+                            placeholder="+91 98765 43210"
                         />
                     </div>
 
@@ -132,7 +134,9 @@ const Register = () => {
                     Already have an account? <button onClick={() => navigate('/login')} className="link-button">Login here</button>
                 </div>
 
-                <button onClick={() => navigate('/')} className="back-button">← Back to Home</button>
+                <button onClick={() => navigate('/')} className="back-button">
+                    <ArrowLeftIcon size={16} /> Back to Home
+                </button>
             </div>
         </div>
     );

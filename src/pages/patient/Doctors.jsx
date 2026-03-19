@@ -8,6 +8,7 @@ import {
     getCurrentUser
 } from '../../utils/database';
 import './Doctors.css';
+import { CrossIcon, SearchIcon, StethoscopeIcon, CalendarIcon, UserIcon, CheckCircleIcon, RefreshIcon, XCircleIcon, ClockIcon } from '../../components/Icons';
 
 const Doctors = () => {
     const navigate = useNavigate();
@@ -141,7 +142,7 @@ const Doctors = () => {
             {/* ── Navbar ── */}
             <nav className="patient-nav">
                 <div className="nav-inner">
-                    <span className="nav-logo" onClick={() => navigate('/dashboard')}>🏥 CityCare</span>
+                    <span className="nav-logo" onClick={() => navigate('/dashboard')}><CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} />CityCare</span>
                     <div className="nav-links">
                         <span onClick={() => navigate('/dashboard')}>Dashboard</span>
                         <span className="active" onClick={() => navigate('/doctors')}>Doctors</span>
@@ -158,7 +159,7 @@ const Doctors = () => {
                     <h1>Our Specialists</h1>
                     <p>Available <strong>7 days a week</strong> — including Sundays</p>
                     <div className="search-wrap">
-                        <span className="search-icon">🔍</span>
+                        <span className="search-icon"><SearchIcon size={18} /></span>
                         <input
                             type="text"
                             placeholder="Search by doctor name or specialization..."
@@ -172,14 +173,14 @@ const Doctors = () => {
                     {filteredDoctors.map(doctor => (
                         <div className="doctor-card" key={doctor.id}>
                             <div className="doc-avatar" style={{ background: `${specColors[doctor.specialization]}22`, color: specColors[doctor.specialization] }}>
-                                👨‍⚕️
+                                <StethoscopeIcon size={28} />
                             </div>
                             <h3>{doctor.name}</h3>
                             <span className="spec-badge" style={{ background: `${specColors[doctor.specialization]}18`, color: specColors[doctor.specialization] }}>
                                 {doctor.specialization}
                             </span>
                             <p className="designation">{doctor.designation}</p>
-                            <div className="availability-chip">📅 {doctor.availableDays.map(d => d.slice(0, 3)).join(', ')}</div>
+                            <div className="availability-chip"><CalendarIcon size={14} /> {doctor.availableDays.map(d => d.slice(0, 3)).join(', ')}</div>
                             <button className="book-btn" onClick={() => openModal(doctor)}>
                                 View Slots &amp; Book
                             </button>
@@ -187,7 +188,7 @@ const Doctors = () => {
                     ))}
                     {filteredDoctors.length === 0 && (
                         <div className="no-results">
-                            <span>🔍</span>
+                            <span><SearchIcon size={32} /></span>
                             <p>No doctors found for "{searchQuery}"</p>
                         </div>
                     )}
@@ -202,7 +203,7 @@ const Doctors = () => {
 
                         {bookingSuccess ? (
                             <div className="booking-success">
-                                <div className="success-icon">✅</div>
+                                <div className="success-icon"><CheckCircleIcon size={48} color="#16a34a" /></div>
                                 <h2>Appointment Confirmed!</h2>
                                 <div className="success-details">
                                     <p><strong>Booking ID:</strong> #{bookingSuccess.id}</p>
@@ -222,7 +223,7 @@ const Doctors = () => {
                             <>
                                 <div className="modal-header">
                                     <div className="modal-doc-info">
-                                        <div className="modal-avatar" style={{ color: specColors[selectedDoctor.specialization] }}>👨‍⚕️</div>
+                                        <div className="modal-avatar" style={{ color: specColors[selectedDoctor.specialization] }}><StethoscopeIcon size={28} /></div>
                                         <div>
                                             <h2>{selectedDoctor.name}</h2>
                                             <span className="modal-spec" style={{ color: specColors[selectedDoctor.specialization] }}>
@@ -244,8 +245,8 @@ const Doctors = () => {
                                         />
                                         {selectedDate && (
                                             selectedDoctor.availableDays.includes(getDayName(selectedDate))
-                                                ? <p className="day-label">📅 {getDayName(selectedDate)} — Doctor is available</p>
-                                                : <p className="day-label" style={{ color: '#ef4444' }}>❌ {getDayName(selectedDate)} — Doctor is not available. Try another date.</p>
+                                                ? <p className="day-label"><CalendarIcon size={14} /> {getDayName(selectedDate)} — Doctor is available</p>
+                                                : <p className="day-label" style={{ color: '#ef4444' }}><XCircleIcon size={14} /> {getDayName(selectedDate)} — Doctor is not available. Try another date.</p>
                                         )}
                                     </div>
 
@@ -253,7 +254,7 @@ const Doctors = () => {
                                         <div className="form-group">
                                             <div className="slot-label-row">
                                                 <label>Select Time Slot</label>
-                                                <button className="refresh-btn" onClick={refreshSlots}>🔄 Refresh</button>
+                                                <button className="refresh-btn" onClick={refreshSlots}><RefreshIcon size={14} /> Refresh</button>
                                             </div>
                                             <div className="slots-grid">
                                                 {slots.map(slot => (
@@ -269,7 +270,7 @@ const Doctors = () => {
                                                     >
                                                         <span className="slot-time">{slot.time}</span>
                                                         <span className="slot-status">
-                                                            {slot.isPast ? '⏰ Past' : slot.isBooked ? '🔴 Full' : '🟢'}
+                                                            {slot.isPast ? 'Past' : slot.isBooked ? 'Full' : 'Open'}
                                                         </span>
                                                     </button>
                                                 ))}
@@ -325,7 +326,7 @@ const Doctors = () => {
                                             onClick={handleBooking}
                                             disabled={loading || !reason.trim() || !patientAge}
                                         >
-                                            {loading ? '⏳ Processing...' : '✅ Confirm Booking'}
+                                            {loading ? 'Processing...' : 'Confirm Booking'}
                                         </button>
                                     )}
                                 </div>

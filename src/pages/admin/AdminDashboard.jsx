@@ -8,6 +8,7 @@ import {
     getCurrentUser
 } from '../../utils/database';
 import './AdminDashboard.css';
+import { CrossIcon, ClipboardIcon, StethoscopeIcon, UsersIcon } from '../../components/Icons';
 
 const TABS = ['Appointments', 'Doctors', 'Registered Users'];
 const STATUS_OPTIONS = ['Confirmed', 'Completed', 'Cancelled'];
@@ -101,7 +102,7 @@ const AdminDashboard = () => {
             {/* ── Nav ── */}
             <nav className="admin-nav">
                 <div className="admin-nav-inner">
-                    <span className="admin-logo">🏥 CityCare Admin</span>
+                    <span className="admin-logo"><CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} /> CityCare Admin</span>
                     <div className="admin-nav-right">
                         <span className="admin-badge">👤 Admin</span>
                         <button className="admin-logout" onClick={() => { localStorage.removeItem('citycare_current_user'); navigate('/'); }}>
@@ -135,7 +136,7 @@ const AdminDashboard = () => {
                             className={`admin-tab ${activeTab === t ? 'active' : ''}`}
                             onClick={() => { setActiveTab(t); setSearchQuery(''); setSelectedDoctor(null); setStatusFilter('All'); setDateFilter(''); }}
                         >
-                            {t === 'Appointments' ? '📋' : t === 'Doctors' ? '👨‍⚕️' : '👥'} {t}
+                            {t === 'Appointments' ? <ClipboardIcon size={16} /> : t === 'Doctors' ? <StethoscopeIcon size={16} /> : <UsersIcon size={16} />} {t}
                         </button>
                     ))}
                 </div>

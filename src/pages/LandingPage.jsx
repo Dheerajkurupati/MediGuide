@@ -1,5 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { CrossIcon } from '../components/Icons';
 import './LandingPage.css';
 
 const LandingPage = () => {
@@ -23,7 +24,7 @@ const LandingPage = () => {
             <nav className="landing-nav">
                 <div className="nav-container">
                     <div className="logo">
-                        <span className="logo-icon">🏥</span>
+                        <span className="logo-icon"><CrossIcon size={20} color="#fff" /></span>
                         <span className="logo-text">CityCare Hospital</span>
                     </div>
                     <button className="admin-link" onClick={() => navigate('/admin-login')}>
@@ -224,7 +225,7 @@ const LandingPage = () => {
             {/* ── Footer ── */}
             <footer className="landing-footer">
                 <div className="footer-inner">
-                    <div className="footer-logo">🏥 CityCare Hospital</div>
+                    <div className="footer-logo"><CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} /> CityCare Hospital</div>
                     <p>Providing compassionate care with cutting-edge technology.</p>
                     <p className="footer-copy">&copy; 2026 CityCare Hospital. All rights reserved.</p>
                 </div>

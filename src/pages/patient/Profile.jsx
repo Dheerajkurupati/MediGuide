@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getCurrentUser, updateUser, changePassword, deleteAccount, getUserAppointments, logoutUser } from '../../utils/database';
+import { CrossIcon, UserIcon, LockIcon, TrashIcon, EditIcon } from '../../components/Icons';
 import './Profile.css';
 
 const Profile = () => {
@@ -79,7 +80,7 @@ const Profile = () => {
         <div className="profile-page">
             <nav className="patient-nav">
                 <div className="nav-inner">
-                    <span className="nav-logo" onClick={() => navigate('/dashboard')}>🏥 CityCare</span>
+                    <span className="nav-logo" onClick={() => navigate('/dashboard')}><CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} />CityCare</span>
                     <div className="nav-links">
                         <span onClick={() => navigate('/dashboard')}>Dashboard</span>
                         <span onClick={() => navigate('/doctors')}>Doctors</span>
@@ -120,9 +121,9 @@ const Profile = () => {
                 {/* Profile Details */}
                 <div className="profile-card">
                     <div className="card-header">
-                        <h2>👤 Personal Information</h2>
+                        <h2><UserIcon size={18} /> Personal Information</h2>
                         {!isEditing ? (
-                            <button className="edit-btn" onClick={() => setIsEditing(true)}>✏️ Edit</button>
+                            <button className="edit-btn" onClick={() => setIsEditing(true)}><EditIcon size={14} /> Edit</button>
                         ) : (
                             <div className="edit-actions">
                                 <button className="save-btn" onClick={handleEditSave}>Save</button>
@@ -182,7 +183,7 @@ const Profile = () => {
                 {/* Change Password */}
                 <div className="profile-card">
                     <div className="card-header">
-                        <h2>🔐 Password & Security</h2>
+                        <h2><LockIcon size={18} /> Password & Security</h2>
                         {!showPasswordForm && (
                             <button className="edit-btn" onClick={() => setShowPasswordForm(true)}>Change Password</button>
                         )}
@@ -215,7 +216,7 @@ const Profile = () => {
                 {/* Delete Account */}
                 <div className="profile-card">
                     <div className="card-header">
-                        <h2>🗑️ Delete Account</h2>
+                        <h2><TrashIcon size={18} /> Delete Account</h2>
                     </div>
 
                     {!showDeleteConfirm ? (

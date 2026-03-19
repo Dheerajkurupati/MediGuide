@@ -2,6 +2,7 @@ import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { getUserAppointments, getCurrentUser, cancelAppointment } from '../../utils/database';
 import './MyBookings.css';
+import { CrossIcon, CalendarIcon, ClockIcon, CheckCircleIcon, XCircleIcon, MessageIcon } from '../../components/Icons';
 
 const MyBookings = () => {
     const navigate = useNavigate();
@@ -51,7 +52,7 @@ const MyBookings = () => {
         <div className="my-bookings-page">
             <nav className="patient-nav">
                 <div className="nav-inner">
-                    <span className="nav-logo" onClick={() => navigate('/dashboard')}>🏥 CityCare</span>
+                    <span className="nav-logo" onClick={() => navigate('/dashboard')}><CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} />CityCare</span>
                     <div className="nav-links">
                         <span onClick={() => navigate('/dashboard')}>Dashboard</span>
                         <span onClick={() => navigate('/doctors')}>Doctors</span>
@@ -90,7 +91,7 @@ const MyBookings = () => {
 
                 {filtered.length === 0 ? (
                     <div className="empty-state">
-                        <span>📅</span>
+                        <span><CalendarIcon size={40} color="#94a3b8" /></span>
                         <h3>{filter === 'All' ? 'No appointments yet' : `No ${filter} appointments`}</h3>
                         <p>Book your first appointment with one of our specialists.</p>
                         <button onClick={() => navigate('/doctors')}>Browse Doctors</button>
@@ -119,22 +120,22 @@ const MyBookings = () => {
                                                 className="status-badge"
                                                 style={{ background: style.bg, color: style.color, border: `1px solid ${style.border}` }}
                                             >
-                                                {appt.status === 'Confirmed' ? '✅' :
-                                                    appt.status === 'Cancelled' ? '❌' : '✔️'} {appt.status}
+                                                {appt.status === 'Confirmed' ? <CheckCircleIcon size={14} /> :
+                                                    appt.status === 'Cancelled' ? <XCircleIcon size={14} /> : <CheckCircleIcon size={14} />} {appt.status}
                                             </span>
                                         </div>
 
                                         <div className="booking-meta">
-                                            <span>🕒 {appt.timeSlot}</span>
-                                            <span>🔖 #{appt.id}</span>
+                                            <span><ClockIcon size={14} /> {appt.timeSlot}</span>
+                                            <span>#{appt.id}</span>
                                         </div>
 
                                         {appt.reason && (
-                                            <p className="booking-reason">💬 {appt.reason}</p>
+                                            <p className="booking-reason"><MessageIcon size={14} /> {appt.reason}</p>
                                         )}
 
                                         {appt.status === 'Cancelled' && appt.cancelReason && (
-                                            <p className="booking-reason" style={{ color: '#dc2626' }}>❌ Cancel reason: {appt.cancelReason}</p>
+                                            <p className="booking-reason" style={{ color: '#dc2626' }}>Cancel reason: {appt.cancelReason}</p>
                                         )}
 
                                         <div className="booking-footer-row">
@@ -145,7 +146,7 @@ const MyBookings = () => {
                                                     onClick={() => handleCancel(appt.id)}
                                                     disabled={cancellingId === appt.id}
                                                 >
-                                                    {cancellingId === appt.id ? '⏳ Cancelling...' : '✕ Cancel'}
+                                                    {cancellingId === appt.id ? 'Cancelling...' : '✕ Cancel'}
                                                 </button>
                                             )}
                                         </div>

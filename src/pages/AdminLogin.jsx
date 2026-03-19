@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginAdmin } from '../utils/database';
+import { ShieldIcon, ArrowLeftIcon } from '../components/Icons';
 import './AuthPages.css';
 
 const AdminLogin = () => {
@@ -28,7 +29,10 @@ const AdminLogin = () => {
         <div className="auth-page admin-auth">
             <div className="auth-container">
                 <div className="auth-header">
-                    <h1>🏥 CityCare Hospital</h1>
+                    <div className="auth-logo-icon" style={{ background: 'linear-gradient(135deg, #059669, #10b981)' }}>
+                        <ShieldIcon size={24} color="#fff" />
+                    </div>
+                    <h1>CityCare Hospital</h1>
                     <h2>Admin Portal</h2>
                     <p>Staff login only</p>
                 </div>
@@ -67,7 +71,9 @@ const AdminLogin = () => {
                     <button type="submit" className="auth-button admin-button">Admin Login</button>
                 </form>
 
-                <button onClick={() => navigate('/')} className="back-button">← Back to Home</button>
+                <button onClick={() => navigate('/')} className="back-button">
+                    <ArrowLeftIcon size={16} /> Back to Home
+                </button>
             </div>
         </div>
     );
