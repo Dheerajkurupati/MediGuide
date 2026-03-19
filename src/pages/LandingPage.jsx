@@ -1,8 +1,21 @@
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 
 const LandingPage = () => {
     const navigate = useNavigate();
+    const [supportForm, setSupportForm] = useState({ name: '', email: '', message: '' });
+
+    const handleSupportChange = (e) => {
+        setSupportForm({ ...supportForm, [e.target.name]: e.target.value });
+    };
+
+    const handleSupportSubmit = (e) => {
+        e.preventDefault();
+        const subject = `Support Request from ${supportForm.name}`;
+        const body = `Name: ${supportForm.name}%0AEmail: ${supportForm.email}%0A%0AMessage:%0A${encodeURIComponent(supportForm.message)}`;
+        window.location.href = `mailto:support@mediguide.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+    };
 
     return (
         <div className="landing-page">
@@ -58,7 +71,7 @@ const LandingPage = () => {
                 <p className="section-sub">From symptoms to appointment in 3 easy steps</p>
                 <div className="steps-row">
                     {[
-                        { icon: '💬', step: '01', title: 'Describe Symptoms', desc: 'Chat with our AI. Tell it how you feel — it listens, asks follow-ups, and analyses severity.' },
+                        { icon: '💬', step: '01', title: 'Describe Symptoms', desc: 'Chat with our Health Assistant. Tell it how you feel — it listens, asks follow-ups, and analyses severity.' },
                         { icon: '🎯', step: '02', title: 'Get Matched', desc: 'Our system recommends the right specialist based on your symptoms and urgency level.' },
                         { icon: '📅', step: '03', title: 'Book & Confirm', desc: 'Pick a date and time that suits you. Get an instant confirmation or waitlist position.' }
                     ].map(item => (
@@ -80,8 +93,8 @@ const LandingPage = () => {
                 >
                     <div className="photo-overlay">
                         <div className="photo-icon">🤖</div>
-                        <h3>AI Symptom Checker</h3>
-                        <p>Smart conversations that understand context, severity, and duration — giving you personalised advice before you even leave home.</p>
+                        <h3>Smart Symptom Checker</h3>
+                        <p>Intelligent conversations that understand context, severity, and duration — giving you personalised advice before you even leave home.</p>
                     </div>
                 </div>
 
@@ -125,46 +138,86 @@ const LandingPage = () => {
                 </blockquote>
             </section>
 
-            {/* ── Specializations ── */}
-            <section className="spec-section">
-                <h2 className="section-title">Our Specializations</h2>
-                <p className="section-sub">Available 7 days a week, including Sundays</p>
-                <div className="spec-grid">
-                    {[
-                        { icon: '❤️', name: 'Cardiology' },
-                        { icon: '🧠', name: 'Neurology' },
-                        { icon: '🩺', name: 'Dermatology' },
-                        { icon: '🦴', name: 'Orthopedics' },
-                        { icon: '🏥', name: 'General Medicine' },
-                        { icon: '🫁', name: 'Gastroenterology' },
-                        { icon: '👶', name: 'Pediatrics' },
-                        { icon: '👂', name: 'ENT' }
-                    ].map(s => (
-                        <div className="spec-chip" key={s.name}>
-                            <span>{s.icon}</span> {s.name}
+            {/* ── Support Section ── */}
+            <section className="support-section">
+                <h2 className="section-title">Need Help? Contact Support</h2>
+                <p className="section-sub">Have a question or need assistance? Fill out the form and we'll get back to you.</p>
+                <form className="support-form" onSubmit={handleSupportSubmit}>
+                    <div className="support-form-row">
+                        <div className="support-field">
+                            <label htmlFor="support-name">Your Name</label>
+                            <input
+                                id="support-name"
+                                type="text"
+                                name="name"
+                                placeholder="Enter your full name"
+                                value={supportForm.name}
+                                onChange={handleSupportChange}
+                                required
+                            />
                         </div>
-                    ))}
-                </div>
+                        <div className="support-field">
+                            <label htmlFor="support-email">Your Email</label>
+                            <input
+                                id="support-email"
+                                type="email"
+                                name="email"
+                                placeholder="Enter your email address"
+                                value={supportForm.email}
+                                onChange={handleSupportChange}
+                                required
+                            />
+                        </div>
+                    </div>
+                    <div className="support-field">
+                        <label htmlFor="support-message">Description</label>
+                        <textarea
+                            id="support-message"
+                            name="message"
+                            placeholder="Describe your query or issue in detail..."
+                            rows="5"
+                            value={supportForm.message}
+                            onChange={handleSupportChange}
+                            required
+                        />
+                    </div>
+                    <button type="submit" className="support-submit-btn">
+                        ✉️ Send to Support
+                    </button>
+                </form>
             </section>
 
-            {/* ── Contact ── */}
+            {/* ── Contact / Find Us ── */}
             <section className="contact-section">
                 <h2 className="section-title">Find Us</h2>
+                <p className="section-sub">Reach out to us anytime — we're here to help</p>
                 <div className="contact-grid">
-                    {[
-                        { icon: '📍', label: 'Address', lines: ['123 Healthcare Avenue, Medical District', 'City Center, State 560001'] },
-                        { icon: '📞', label: 'Phone', lines: ['+1 (555) 123-4567', 'Emergency: +1 (555) 911-0000'] },
-                        { icon: '✉️', label: 'Email', lines: ['info@citycarehospital.com', 'appointments@citycarehospital.com'] },
-                        { icon: '🕐', label: 'Hours', lines: ['Mon – Sun: 8:00 AM – 8:00 PM', 'Emergency: 24 / 7'] }
-                    ].map(c => (
-                        <div className="contact-card" key={c.label}>
-                            <div className="contact-icon-box">{c.icon}</div>
-                            <div>
-                                <strong>{c.label}</strong>
-                                {c.lines.map(l => <p key={l}>{l}</p>)}
-                            </div>
+                    <div className="contact-card">
+                        <div className="contact-icon-box">📍</div>
+                        <div>
+                            <strong>Address</strong>
+                            <p>123 Healthcare Avenue, Medical District</p>
+                            <p>Hyderabad, Telangana 500081</p>
                         </div>
-                    ))}
+                    </div>
+
+                    <div className="contact-card">
+                        <div className="contact-icon-box">📞</div>
+                        <div>
+                            <strong>Phone</strong>
+                            <p><a href="tel:+919876543210" className="contact-link">+91 98765 43210</a></p>
+                            <p><a href="tel:+914012345678" className="contact-link">+91 40-1234 5678</a></p>
+                        </div>
+                    </div>
+
+                    <div className="contact-card">
+                        <div className="contact-icon-box">✉️</div>
+                        <div>
+                            <strong>Email</strong>
+                            <p><a href="mailto:info@mediguide.com" className="contact-link">info@mediguide.com</a></p>
+                            <p><a href="mailto:appointments@mediguide.com" className="contact-link">appointments@mediguide.com</a></p>
+                        </div>
+                    </div>
                 </div>
             </section>
 

@@ -21,6 +21,7 @@ const AdminDashboard = () => {
     const [searchQuery, setSearchQuery] = useState('');
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [statusFilter, setStatusFilter] = useState('All');
+    const [dateFilter, setDateFilter] = useState('');
     const [doctorDate, setDoctorDate] = useState(new Date().toISOString().split('T')[0]);
 
     useEffect(() => {
@@ -61,7 +62,8 @@ const AdminDashboard = () => {
             a.specialization?.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === 'All' || a.status === statusFilter;
         const matchesDoctor = !selectedDoctor || a.doctorId === selectedDoctor.id;
-        return matchesSearch && matchesStatus && matchesDoctor;
+        const matchesDate = !dateFilter || a.date === dateFilter;
+        return matchesSearch && matchesStatus && matchesDoctor && matchesDate;
     });
 
     const filteredUsers = users.filter(u =>
@@ -131,7 +133,7 @@ const AdminDashboard = () => {
                         <button
                             key={t}
                             className={`admin-tab ${activeTab === t ? 'active' : ''}`}
-                            onClick={() => { setActiveTab(t); setSearchQuery(''); setSelectedDoctor(null); setStatusFilter('All'); }}
+                            onClick={() => { setActiveTab(t); setSearchQuery(''); setSelectedDoctor(null); setStatusFilter('All'); setDateFilter(''); }}
                         >
                             {t === 'Appointments' ? '📋' : t === 'Doctors' ? '👨‍⚕️' : '👥'} {t}
                         </button>
@@ -155,17 +157,39 @@ const AdminDashboard = () => {
                     </div>
 
                     {activeTab === 'Appointments' && (
-                        <div className="toolbar-right">
-                            {selectedDoctor && (
-                                <button className="clear-filter-btn" onClick={() => setSelectedDoctor(null)}>
-                                    ✕ {selectedDoctor.name}
+                        <>
+                            <div className="date-icon-btn" onClick={() => document.getElementById('appt-date-filter').showPicker()}>
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+                                    <line x1="16" y1="2" x2="16" y2="6" />
+                                    <line x1="8" y1="2" x2="8" y2="6" />
+                                    <line x1="3" y1="10" x2="21" y2="10" />
+                                </svg>
+                                <input
+                                    id="appt-date-filter"
+                                    type="date"
+                                    value={dateFilter}
+                                    onChange={e => setDateFilter(e.target.value)}
+                                    className="hidden-date-input"
+                                />
+                            </div>
+                            {dateFilter && (
+                                <button className="clear-filter-btn" onClick={() => setDateFilter('')}>
+                                    ✕ {dateFilter}
                                 </button>
                             )}
-                            <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
-                                <option value="All">All Status</option>
-                                {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
-                            </select>
-                        </div>
+                            <div className="toolbar-right">
+                                {selectedDoctor && (
+                                    <button className="clear-filter-btn" onClick={() => setSelectedDoctor(null)}>
+                                        ✕ {selectedDoctor.name}
+                                    </button>
+                                )}
+                                <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
+                                    <option value="All">All Status</option>
+                                    {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                                </select>
+                            </div>
+                        </>
                     )}
                 </div>
 

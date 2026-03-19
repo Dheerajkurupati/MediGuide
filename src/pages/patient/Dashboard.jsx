@@ -53,7 +53,7 @@ const Dashboard = () => {
                 </div>
 
                 <div className="nav-right">
-                    <span className="user-name">👤 {user.name}</span>
+                    <span className="user-name" onClick={() => navigate('/profile')} style={{ cursor: 'pointer' }}>👤 {user.name}</span>
                     <button onClick={handleLogout} className="logout-btn">Logout</button>
                 </div>
             </nav>

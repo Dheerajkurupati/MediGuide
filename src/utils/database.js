@@ -97,6 +97,56 @@ export const logoutUser = () => {
 // Returns every registered patient — used by admin dashboard
 export const getAllUsers = () => JSON.parse(localStorage.getItem(KEYS.USERS) || '[]');
 
+// Update user profile details (name, phone, age, gender — NOT email)
+export const updateUser = (userId, updates) => {
+    const users = JSON.parse(localStorage.getItem(KEYS.USERS) || '[]');
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx === -1) return { success: false, message: 'User not found.' };
+
+    // Only allow updating safe fields
+    const allowed = ['name', 'phone', 'age', 'gender'];
+    allowed.forEach(field => {
+        if (updates[field] !== undefined) users[idx][field] = updates[field];
+    });
+
+    localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+    // Also update the current session so navbar etc. reflect changes
+    localStorage.setItem(KEYS.CURRENT_USER, JSON.stringify(users[idx]));
+    return { success: true, user: users[idx] };
+};
+
+// Change password — verifies old password first
+export const changePassword = (userId, oldPassword, newPassword) => {
+    const users = JSON.parse(localStorage.getItem(KEYS.USERS) || '[]');
+    const idx = users.findIndex(u => u.id === userId);
+    if (idx === -1) return { success: false, message: 'User not found.' };
+
+    if (users[idx].password !== oldPassword) {
+        return { success: false, message: 'Current password is incorrect.' };
+    }
+
+    users[idx].password = newPassword;
+    localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+    localStorage.setItem(KEYS.CURRENT_USER, JSON.stringify(users[idx]));
+    return { success: true, message: 'Password changed successfully.' };
+};
+
+// Delete account — removes user and all their appointments
+export const deleteAccount = (userId) => {
+    let users = JSON.parse(localStorage.getItem(KEYS.USERS) || '[]');
+    users = users.filter(u => u.id !== userId);
+    localStorage.setItem(KEYS.USERS, JSON.stringify(users));
+
+    // Remove all appointments belonging to this user
+    let appointments = JSON.parse(localStorage.getItem(KEYS.APPOINTMENTS) || '[]');
+    appointments = appointments.filter(a => a.userId !== userId);
+    localStorage.setItem(KEYS.APPOINTMENTS, JSON.stringify(appointments));
+
+    // Log them out
+    localStorage.removeItem(KEYS.CURRENT_USER);
+    return { success: true };
+};
+
 // ════════════════════════════════════════════════════════════
 // DOCTOR MANAGEMENT
 // ════════════════════════════════════════════════════════════

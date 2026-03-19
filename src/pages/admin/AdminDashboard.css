@@ -213,6 +213,37 @@
     color: #0f172a;
 }
 
+/* ── Date icon button ── */
+.date-icon-btn {
+    width: 46px;
+    height: 46px;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    color: #475569;
+    position: relative;
+    flex-shrink: 0;
+    transition: border-color 0.2s, box-shadow 0.2s, color 0.2s;
+}
+
+.date-icon-btn:hover {
+    border-color: #2563eb;
+    color: #2563eb;
+    box-shadow: 0 2px 12px rgba(37, 99, 235, 0.12);
+}
+
+.hidden-date-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+}
+
 /* ── Table ── */
 .table-wrap {
     background: #fff;
