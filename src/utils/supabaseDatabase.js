@@ -9,29 +9,25 @@ import { supabase } from '../lib/supabase';
 
 const SESSION_KEY = 'citycare_current_user';
 
-// ─── Booking ID helper ────────────────────────────────────────
-// Reads and increments the counter row in `booking_counter` table.
-// Returns a string like "1001"
-const getNextBookingId = async () => {
-    // 'last' is the counter column name in Supabase
-    const { data, error } = await supabase
-        .from('booking_counter')
-        .select('last')
-        .eq('id', 1)
-        .single();
+// ─── Booking reference number (display only, not primary key) ────
+// Uses the booking_counter table. Falls back to a short timestamp code.
+const getBookingRef = async () => {
+    try {
+        const { data, error } = await supabase
+            .from('booking_counter')
+            .select('last')
+            .eq('id', 1)
+            .single();
 
-    if (error || !data) {
-        return String(Date.now()).slice(-6);
+        if (error || !data) throw new Error('counter unavailable');
+
+        const next = (data.last || 1000) + 1;
+        await supabase.from('booking_counter').update({ last: next }).eq('id', 1);
+        return `MG-${next}`;
+    } catch {
+        // Fallback: use last 6 digits of timestamp
+        return `MG-${String(Date.now()).slice(-6)}`;
     }
-
-    const next = (data.last || 1000) + 1;
-
-    await supabase
-        .from('booking_counter')
-        .update({ last: next })
-        .eq('id', 1);
-
-    return String(next);
 };
 
 // ════════════════════════════════════════════════════════════
@@ -381,11 +377,14 @@ export const bookAppointment = async (appointmentData) => {
     const currentUser = getCurrentUser();
     if (!currentUser) return { success: false, message: 'Not logged in.' };
 
-    const bookingId = await getNextBookingId();
+    // UUID for DB primary key (prevents duplicate key errors)
+    const appointmentId = crypto.randomUUID();
+    // Human-readable booking reference from counter (display only)
+    const bookingRef = await getBookingRef();
 
     const newAppointment = {
-        id: bookingId,
-        user_id: currentUser.id,           // uuid — matches profiles.id
+        id: appointmentId,
+        user_id: currentUser.id,
         patient_name: currentUser.name,
         patient_phone: currentUser.phone || 'N/A',
         doctor_id: appointmentData.doctorId,
@@ -396,7 +395,7 @@ export const bookAppointment = async (appointmentData) => {
         reason: appointmentData.reason,
         status: 'Confirmed',
         created_at: new Date().toISOString()
-        // Note: patient_age, patient_email, patient_gender not in schema — excluded
+        // patient_age, patient_email, patient_gender not in appointments schema
     };
 
     const { data, error } = await supabase
@@ -407,7 +406,25 @@ export const bookAppointment = async (appointmentData) => {
 
     if (error) return { success: false, message: error.message };
 
-    return { success: true, appointment: normaliseAppointment(data) };
+    // Save gender to user profile so it's available for future bookings
+    if (appointmentData.gender && currentUser.id) {
+        await supabase
+            .from('profiles')
+            .update({ gender: appointmentData.gender })
+            .eq('id', currentUser.id);
+        // Update session too
+        const sessionUser = getCurrentUser();
+        if (sessionUser) {
+            localStorage.setItem('citycare_current_user', JSON.stringify({ ...sessionUser, gender: appointmentData.gender }));
+        }
+    }
+
+    const normalised = normaliseAppointment(data);
+    // Attach display-friendly booking reference and gender
+    normalised.bookingRef = bookingRef;
+    normalised.gender = appointmentData.gender || '';
+
+    return { success: true, appointment: normalised };
 };
 
 // Cancel an appointment — patient side
