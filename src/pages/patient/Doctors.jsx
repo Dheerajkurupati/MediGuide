@@ -38,7 +38,8 @@ const Doctors = () => {
         const user = getCurrentUser();
         if (!user || user.isAdmin) { navigate('/login'); return; }
 
-        if (user.age) setPatientAge(String(user.age));
+
+
 
         const params = new URLSearchParams(location.search);
         const specParam = params.get('specialization');
