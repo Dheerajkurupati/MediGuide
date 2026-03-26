@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser, updateUser, changePassword, deleteAccount, getUserAppointments, logoutUser } from '../../utils/database';
+import { getCurrentUser, updateUser, changePassword, deleteAccount, getUserAppointments, logoutUser } from '../../utils/supabaseDatabase';
 import { CrossIcon, UserIcon, LockIcon, TrashIcon, EditIcon } from '../../components/Icons';
 import './Profile.css';
 
@@ -14,6 +14,7 @@ const Profile = () => {
     const [message, setMessage] = useState({ text: '', type: '' });
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [stats, setStats] = useState({ total: 0, confirmed: 0, completed: 0, cancelled: 0 });
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         const currentUser = getCurrentUser();
@@ -21,13 +22,16 @@ const Profile = () => {
         setUser(currentUser);
         setEditForm({ name: currentUser.name, phone: currentUser.phone || '', age: currentUser.age || '', gender: currentUser.gender || '' });
 
-        const appts = getUserAppointments(currentUser.id);
-        setStats({
-            total: appts.length,
-            confirmed: appts.filter(a => a.status === 'Confirmed').length,
-            completed: appts.filter(a => a.status === 'Completed').length,
-            cancelled: appts.filter(a => a.status === 'Cancelled').length
-        });
+        const loadStats = async () => {
+            const appts = await getUserAppointments(currentUser.id);
+            setStats({
+                total: appts.length,
+                confirmed: appts.filter(a => a.status === 'Confirmed').length,
+                completed: appts.filter(a => a.status === 'Completed').length,
+                cancelled: appts.filter(a => a.status === 'Cancelled').length
+            });
+        };
+        loadStats();
     }, [navigate]);
 
     const showMsg = (text, type = 'success') => {
@@ -35,9 +39,11 @@ const Profile = () => {
         setTimeout(() => setMessage({ text: '', type: '' }), 3000);
     };
 
-    const handleEditSave = () => {
+    const handleEditSave = async () => {
         if (!editForm.name.trim()) { showMsg('Name cannot be empty.', 'error'); return; }
-        const result = updateUser(user.id, editForm);
+        setSaving(true);
+        const result = await updateUser(user.id, editForm);
+        setSaving(false);
         if (result.success) {
             setUser(result.user);
             setIsEditing(false);
@@ -47,7 +53,7 @@ const Profile = () => {
         }
     };
 
-    const handlePasswordChange = () => {
+    const handlePasswordChange = async () => {
         if (!passwordForm.oldPassword || !passwordForm.newPassword) {
             showMsg('Please fill in all password fields.', 'error'); return;
         }
@@ -57,7 +63,9 @@ const Profile = () => {
         if (passwordForm.newPassword !== passwordForm.confirmPassword) {
             showMsg('New passwords do not match.', 'error'); return;
         }
-        const result = changePassword(user.id, passwordForm.oldPassword, passwordForm.newPassword);
+        setSaving(true);
+        const result = await changePassword(user.id, passwordForm.oldPassword, passwordForm.newPassword);
+        setSaving(false);
         if (result.success) {
             setShowPasswordForm(false);
             setPasswordForm({ oldPassword: '', newPassword: '', confirmPassword: '' });
@@ -67,8 +75,8 @@ const Profile = () => {
         }
     };
 
-    const handleDeleteAccount = () => {
-        deleteAccount(user.id);
+    const handleDeleteAccount = async () => {
+        await deleteAccount(user.id);
         navigate('/');
     };
 

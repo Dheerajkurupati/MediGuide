@@ -1,6 +1,4 @@
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
-import { useEffect } from 'react';
-import { initializeDatabase } from './utils/database';
 
 // Public Pages
 import LandingPage from './pages/LandingPage';
@@ -20,10 +18,6 @@ import AdminDashboard from './pages/admin/AdminDashboard';
 import './App.css';
 
 function App() {
-  useEffect(() => {
-    // Initialize database on app load
-    initializeDatabase();
-  }, []);
 
   return (
     <Router>

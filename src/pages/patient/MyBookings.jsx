@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getUserAppointments, getCurrentUser, cancelAppointment } from '../../utils/database';
+import { getUserAppointments, getCurrentUser, cancelAppointment } from '../../utils/supabaseDatabase';
 import './MyBookings.css';
 import { CrossIcon, CalendarIcon, ClockIcon, CheckCircleIcon, XCircleIcon, MessageIcon } from '../../components/Icons';
 
@@ -10,23 +10,22 @@ const MyBookings = () => {
     const [filter, setFilter] = useState('All');
     const [cancellingId, setCancellingId] = useState(null);
 
-    const loadAppointments = useCallback(() => {
+    const loadAppointments = useCallback(async () => {
         const user = getCurrentUser();
         if (!user || user.isAdmin) { navigate('/login'); return; }
-        setAppointments(getUserAppointments(user.id));
+        const appts = await getUserAppointments(user.id);
+        setAppointments(appts);
     }, [navigate]);
 
     useEffect(() => { loadAppointments(); }, [loadAppointments]);
 
-    const handleCancel = (appointmentId) => {
+    const handleCancel = async (appointmentId) => {
         const reason = prompt('Please enter a reason for cancellation:');
-        if (!reason) return;   // user clicked Cancel or entered nothing — do nothing
+        if (!reason) return;
         setCancellingId(appointmentId);
-        setTimeout(() => {
-            cancelAppointment(appointmentId, reason);
-            loadAppointments();
-            setCancellingId(null);
-        }, 400);
+        await cancelAppointment(appointmentId, reason);
+        await loadAppointments();
+        setCancellingId(null);
     };
 
     const statusColors = {

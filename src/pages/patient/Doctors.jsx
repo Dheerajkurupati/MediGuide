@@ -6,7 +6,7 @@ import {
     getAvailableSlots,
     bookAppointment,
     getCurrentUser
-} from '../../utils/database';
+} from '../../utils/supabaseDatabase';
 import './Doctors.css';
 import { CrossIcon, SearchIcon, StethoscopeIcon, CalendarIcon, UserIcon, CheckCircleIcon, RefreshIcon, XCircleIcon, ClockIcon } from '../../components/Icons';
 
@@ -21,11 +21,10 @@ const Doctors = () => {
     const [slots, setSlots] = useState([]);
     const [selectedSlot, setSelectedSlot] = useState('');
     const [reason, setReason] = useState('');
-    const [patientAge, setPatientAge] = useState('');   // age entered at booking time
-    const [patientGender, setPatientGender] = useState('');  // gender entered at booking time
     const [bookingSuccess, setBookingSuccess] = useState(null);
     const [showModal, setShowModal] = useState(false);
     const [loading, setLoading] = useState(false);
+    const [loadingDoctors, setLoadingDoctors] = useState(true);
 
     // Date bounds
     const todayStr = new Date().toISOString().split('T')[0];
@@ -39,12 +38,20 @@ const Doctors = () => {
         const user = getCurrentUser();
         if (!user || user.isAdmin) { navigate('/login'); return; }
 
-        // Pre-fill age from the registered user profile
         if (user.age) setPatientAge(String(user.age));
 
         const params = new URLSearchParams(location.search);
         const specParam = params.get('specialization');
-        setDoctors(specParam ? getDoctorsBySpecialization(specParam) : getDoctors());
+
+        const loadDoctors = async () => {
+            setLoadingDoctors(true);
+            const data = specParam
+                ? await getDoctorsBySpecialization(specParam)
+                : await getDoctors();
+            setDoctors(data);
+            setLoadingDoctors(false);
+        };
+        loadDoctors();
     }, [navigate, location]);
 
     const filteredDoctors = doctors.filter(d =>
@@ -58,40 +65,40 @@ const Doctors = () => {
         setSlots([]);
         setSelectedSlot('');
         setReason('');
-        // Keep patientAge as-is (pre-filled from profile), user can change it
         setBookingSuccess(null);
         setShowModal(true);
     };
 
-    const handleDateChange = (e) => {
+    const handleDateChange = async (e) => {
         const date = e.target.value;
         setSelectedDate(date);
         setSelectedSlot('');
         if (date && selectedDoctor) {
-            // Check if the doctor is available on the chosen day
-            const dayName = getDayName(date);   // e.g. "Wednesday"
+            const dayName = getDayName(date);
             if (!selectedDoctor.availableDays.includes(dayName)) {
-                setSlots([]);   // no slots — doctor off that day
+                setSlots([]);
             } else {
-                setSlots(getAvailableSlots(selectedDoctor.id, date));
+                const available = await getAvailableSlots(selectedDoctor.id, date);
+                setSlots(available);
             }
         }
     };
 
-    const refreshSlots = () => {
+    const refreshSlots = async () => {
         if (selectedDate && selectedDoctor) {
-            setSlots(getAvailableSlots(selectedDoctor.id, selectedDate));
+            const available = await getAvailableSlots(selectedDoctor.id, selectedDate);
+            setSlots(available);
         }
     };
 
     const handleBooking = async () => {
-        if (!selectedDate || !selectedSlot || !reason.trim() || !patientAge || !patientGender) {
-            alert('Please fill in all fields including patient age and gender.');
+        if (!selectedDate || !selectedSlot || !reason.trim()) {
+            alert('Please select a date, time slot, and enter a reason for your visit.');
             return;
         }
         setLoading(true);
-        // Double-check slot is still valid (might have changed since last refresh)
-        const freshSlots = getAvailableSlots(selectedDoctor.id, selectedDate);
+        // Double-check slot is still available
+        const freshSlots = await getAvailableSlots(selectedDoctor.id, selectedDate);
         const slotInfo = freshSlots.find(s => s.time === selectedSlot);
         if (!slotInfo?.available) {
             alert('Sorry, this slot is no longer available. Please refresh and choose another.');
@@ -100,23 +107,23 @@ const Doctors = () => {
             setLoading(false);
             return;
         }
-        setTimeout(() => {
-            const result = bookAppointment({
-                doctorId: selectedDoctor.id,
-                doctorName: selectedDoctor.name,
-                specialization: selectedDoctor.specialization,
-                date: selectedDate,
-                timeSlot: selectedSlot,
-                reason: reason.trim(),
-                patientAge: patientAge,
-                patientGender: patientGender
-            });
-            setLoading(false);
-            if (result.success) {
-                setBookingSuccess(result.appointment);
-                setSlots(getAvailableSlots(selectedDoctor.id, selectedDate));
-            }
-        }, 600);
+
+        const result = await bookAppointment({
+            doctorId: selectedDoctor.id,
+            doctorName: selectedDoctor.name,
+            specialization: selectedDoctor.specialization,
+            date: selectedDate,
+            timeSlot: selectedSlot,
+            reason: reason.trim()
+        });
+        setLoading(false);
+        if (result.success) {
+            setBookingSuccess(result.appointment);
+            const updatedSlots = await getAvailableSlots(selectedDoctor.id, selectedDate);
+            setSlots(updatedSlots);
+        } else {
+            alert(result.message || 'Booking failed. Please try again.');
+        }
     };
 
     const closeModal = () => {
@@ -211,8 +218,7 @@ const Doctors = () => {
                                     <p><strong>Specialization:</strong> {bookingSuccess.specialization}</p>
                                     <p><strong>Date:</strong> {getDayName(bookingSuccess.date)}, {bookingSuccess.date}</p>
                                     <p><strong>Time:</strong> {bookingSuccess.timeSlot}</p>
-                                    <p><strong>Patient Age:</strong> {bookingSuccess.patientAge}</p>
-                                    <p><strong>Gender:</strong> {bookingSuccess.patientGender}</p>
+                                    <p><strong>Reason:</strong> {bookingSuccess.reason}</p>
                                 </div>
                                 <div className="success-actions">
                                     <button className="btn-primary" onClick={() => navigate('/my-bookings')}>View My Bookings</button>
@@ -284,29 +290,6 @@ const Doctors = () => {
                                     {selectedSlot && (
                                         <>
                                             <div className="form-group">
-                                                <label>Patient Age</label>
-                                                <input
-                                                    type="number"
-                                                    min="1"
-                                                    max="120"
-                                                    placeholder="Enter patient age"
-                                                    value={patientAge}
-                                                    onChange={e => setPatientAge(e.target.value)}
-                                                />
-                                            </div>
-                                            <div className="form-group">
-                                                <label>Gender</label>
-                                                <select
-                                                    value={patientGender}
-                                                    onChange={e => setPatientGender(e.target.value)}
-                                                >
-                                                    <option value="">Select Gender</option>
-                                                    <option value="Male">Male</option>
-                                                    <option value="Female">Female</option>
-                                                    <option value="Other">Other</option>
-                                                </select>
-                                            </div>
-                                            <div className="form-group">
                                                 <label>Reason for Visit</label>
                                                 <textarea
                                                     rows={3}
@@ -324,7 +307,7 @@ const Doctors = () => {
                                         <button
                                             className="confirm-btn"
                                             onClick={handleBooking}
-                                            disabled={loading || !reason.trim() || !patientAge}
+                                            disabled={loading || !reason.trim()}
                                         >
                                             {loading ? 'Processing...' : 'Confirm Booking'}
                                         </button>

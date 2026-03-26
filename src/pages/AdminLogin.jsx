@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginAdmin } from '../utils/database';
+import { loginAdmin } from '../utils/supabaseDatabase';
 import { ShieldIcon, ArrowLeftIcon } from '../components/Icons';
 import './AuthPages.css';
 
@@ -11,12 +11,15 @@ const AdminLogin = () => {
         password: ''
     });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
 
-        const result = loginAdmin(formData.email, formData.password);
+        const result = await loginAdmin(formData.email, formData.password);
+        setLoading(false);
 
         if (result.success) {
             navigate('/admin/dashboard');
@@ -68,7 +71,7 @@ const AdminLogin = () => {
                         />
                     </div>
 
-                    <button type="submit" className="auth-button admin-button">Admin Login</button>
+                    <button type="submit" className="auth-button admin-button" disabled={loading}>{loading ? 'Verifying...' : 'Admin Login'}</button>
                 </form>
 
                 <button onClick={() => navigate('/')} className="back-button">

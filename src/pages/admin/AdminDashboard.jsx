@@ -6,7 +6,7 @@ import {
     getAllAppointments,
     updateAppointmentStatus,
     getCurrentUser
-} from '../../utils/database';
+} from '../../utils/supabaseDatabase';
 import './AdminDashboard.css';
 import { CrossIcon, ClipboardIcon, StethoscopeIcon, UsersIcon } from '../../components/Icons';
 
@@ -31,28 +31,34 @@ const AdminDashboard = () => {
         loadData();
     }, [navigate]);
 
-    const loadData = () => {
-        setAppointments(getAllAppointments());
-        setDoctors(getDoctors());
-        setUsers(getAllUsers());
+    const loadData = async () => {
+        const [appts, docs, usrs] = await Promise.all([
+            getAllAppointments(),
+            getDoctors(),
+            getAllUsers()
+        ]);
+        setAppointments(appts);
+        setDoctors(docs);
+        setUsers(usrs);
     };
 
-    const handleStatusChange = (appointmentId, newStatus) => {
-        // If cancelling, ask admin for a reason
+    const handleStatusChange = async (appointmentId, newStatus) => {
         let reason = '';
         if (newStatus === 'Cancelled') {
             reason = prompt('Please enter a reason for cancellation:');
-            if (!reason) return;   // admin clicked Cancel on the prompt — do nothing
+            if (!reason) return;
         }
 
-        const result = updateAppointmentStatus(appointmentId, newStatus, reason);
+        const result = await updateAppointmentStatus(appointmentId, newStatus, reason);
 
         if (!result.success) {
-            alert(result.message);   // e.g. "Cannot change status of a cancelled appointment."
+            alert(result.message);
             return;
         }
 
-        setAppointments(getAllAppointments());
+        // Reload appointments from Supabase
+        const appts = await getAllAppointments();
+        setAppointments(appts);
     };
 
     const filteredAppointments = appointments.filter(a => {

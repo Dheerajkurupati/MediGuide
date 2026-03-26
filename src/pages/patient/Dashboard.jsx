@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser, logoutUser, getUserAppointments } from '../../utils/database';
+import { getCurrentUser, logoutUser, getUserAppointments } from '../../utils/supabaseDatabase';
 import { CrossIcon, StethoscopeIcon, CalendarIcon, SearchIcon, UserIcon, ClipboardIcon, MessageIcon, ActivityIcon, CheckCircleIcon, ClockIcon, XCircleIcon } from '../../components/Icons';
 import Chatbot from '../../components/Chatbot';
 import './Dashboard.css';
@@ -17,22 +17,26 @@ const Dashboard = () => {
         const currentUser = getCurrentUser();
         if (!currentUser || currentUser.isAdmin) {
             navigate('/login');
-        } else {
-            setUser(currentUser);
-            const appts = getUserAppointments(currentUser.id);
+            return;
+        }
+        setUser(currentUser);
+
+        // Load appointments from Supabase
+        const loadAppts = async () => {
+            const appts = await getUserAppointments(currentUser.id);
             setStats({
                 total: appts.length,
                 confirmed: appts.filter(a => a.status === 'Confirmed').length,
                 completed: appts.filter(a => a.status === 'Completed').length,
                 cancelled: appts.filter(a => a.status === 'Cancelled').length
             });
-            // Find next upcoming
             const todayStr = new Date().toISOString().split('T')[0];
             const next = appts
                 .filter(a => a.status === 'Confirmed' && a.date >= todayStr)
                 .sort((a, b) => a.date.localeCompare(b.date))[0];
             setUpcoming(next || null);
-        }
+        };
+        loadAppts();
     }, [navigate]);
 
     const handleLogout = () => {

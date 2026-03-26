@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { registerUser } from '../utils/database';
+import { registerUser } from '../utils/supabaseDatabase';
 import { CrossIcon, ArrowLeftIcon } from '../components/Icons';
 import './AuthPages.css';
 
@@ -15,8 +15,9 @@ const Register = () => {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
 
@@ -30,17 +31,19 @@ const Register = () => {
             return;
         }
 
-        const result = registerUser({
+        setLoading(true);
+        const result = await registerUser({
             name: formData.name,
             email: formData.email,
             phone: formData.phone,
             age: formData.age,
             password: formData.password
         });
+        setLoading(false);
 
         if (result.success) {
             alert('Registration successful! Please login.');
-            navigate('/dashboard');
+            navigate('/login');
         } else {
             setError(result.message);
         }
@@ -127,7 +130,7 @@ const Register = () => {
                         />
                     </div>
 
-                    <button type="submit" className="auth-button">Register</button>
+                    <button type="submit" className="auth-button" disabled={loading}>{loading ? 'Registering...' : 'Register'}</button>
                 </form>
 
                 <div className="auth-footer">

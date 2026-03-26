@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { loginUser } from '../utils/database';
+import { loginUser } from '../utils/supabaseDatabase';
 import { CrossIcon, ArrowLeftIcon } from '../components/Icons';
 import './AuthPages.css';
 
@@ -11,12 +11,15 @@ const Login = () => {
         password: ''
     });
     const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        setLoading(true);
 
-        const result = loginUser(formData.email, formData.password);
+        const result = await loginUser(formData.email, formData.password);
+        setLoading(false);
 
         if (result.success) {
             navigate('/dashboard');
@@ -60,7 +63,7 @@ const Login = () => {
                         />
                     </div>
 
-                    <button type="submit" className="auth-button">Login</button>
+                    <button type="submit" className="auth-button" disabled={loading}>{loading ? 'Logging in...' : 'Login'}</button>
                 </form>
 
                 <div className="auth-footer">
