@@ -4,6 +4,8 @@ import { getUserAppointments, getCurrentUser, cancelAppointment } from '../../ut
 import './MyBookings.css';
 import { CrossIcon, CalendarIcon, ClockIcon, CheckCircleIcon, XCircleIcon, MessageIcon } from '../../components/Icons';
 
+const FILTERS = ['All', 'pending', 'accepted', 'completed', 'rejected', 'cancelled'];
+
 const MyBookings = () => {
     const navigate = useNavigate();
     const [appointments, setAppointments] = useState([]);
@@ -12,12 +14,20 @@ const MyBookings = () => {
 
     const loadAppointments = useCallback(async () => {
         const user = getCurrentUser();
-        if (!user || user.isAdmin) { navigate('/login'); return; }
+        // Guard: if no session, or admin/doctor session is active → redirect
+        if (!user) { navigate('/login'); return; }
+        if (user.isAdmin) { navigate('/login'); return; }
+        if (user.isDoctor) { navigate('/doctor-login'); return; }
         const appts = await getUserAppointments(user.id);
         setAppointments(appts);
     }, [navigate]);
 
-    useEffect(() => { loadAppointments(); }, [loadAppointments]);
+    useEffect(() => {
+        loadAppointments();
+        // Auto-refresh every 30s so status changes from doctor show up
+        const interval = setInterval(loadAppointments, 30000);
+        return () => clearInterval(interval);
+    }, [loadAppointments]);
 
     const handleCancel = async (appointmentId) => {
         const reason = prompt('Please enter a reason for cancellation:');
@@ -29,12 +39,21 @@ const MyBookings = () => {
     };
 
     const statusColors = {
-        Confirmed: { bg: '#f0fdf4', color: '#16a34a', border: '#bbf7d0' },
-        Cancelled: { bg: '#fef2f2', color: '#dc2626', border: '#fecaca' },
-        Completed: { bg: '#f0f9ff', color: '#0284c7', border: '#bae6fd' }
+        pending:   { bg: '#fffbeb', color: '#d97706', border: '#fde68a' },
+        accepted:  { bg: '#f0fdf4', color: '#16a34a', border: '#bbf7d0' },
+        rejected:  { bg: '#fef2f2', color: '#dc2626', border: '#fecaca' },
+        completed: { bg: '#f0f9ff', color: '#0284c7', border: '#bae6fd' },
+        cancelled: { bg: '#f8fafc', color: '#64748b', border: '#e2e8f0' }
     };
 
-    const FILTERS = ['All', 'Confirmed', 'Cancelled', 'Completed'];
+    const STATUS_LABELS = {
+        pending:   'Pending (Awaiting Doctor)',
+        accepted:  'Accepted',
+        rejected:  'Rejected',
+        completed: 'Completed',
+        cancelled: 'Cancelled'
+    };
+
 
     const filtered = filter === 'All' ? appointments : appointments.filter(a => a.status === filter);
 
@@ -44,8 +63,9 @@ const MyBookings = () => {
     };
 
     const canCancel = (appt) =>
-        appt.status === 'Confirmed' &&
+        (appt.status === 'pending' || appt.status === 'accepted') &&
         new Date(`${appt.date}T00:00`) >= new Date(new Date().toDateString());
+
 
     return (
         <div className="my-bookings-page">
@@ -98,7 +118,9 @@ const MyBookings = () => {
                 ) : (
                     <div className="bookings-list">
                         {filtered.map(appt => {
-                            const style = statusColors[appt.status] || statusColors.Confirmed;
+                            const style = statusColors[appt.status] || statusColors.pending;
+                            const label = STATUS_LABELS[appt.status] || appt.status;
+
                             return (
                                 <div className="booking-card" key={appt.id}>
                                     <div className="booking-card-left">
@@ -119,9 +141,13 @@ const MyBookings = () => {
                                                 className="status-badge"
                                                 style={{ background: style.bg, color: style.color, border: `1px solid ${style.border}` }}
                                             >
-                                                {appt.status === 'Confirmed' ? <CheckCircleIcon size={14} /> :
-                                                    appt.status === 'Cancelled' ? <XCircleIcon size={14} /> : <CheckCircleIcon size={14} />} {appt.status}
+                                                {appt.status === 'accepted'  ? <CheckCircleIcon size={14} /> :
+                                                 appt.status === 'completed' ? <CheckCircleIcon size={14} /> :
+                                                 appt.status === 'rejected'  ? <XCircleIcon size={14} /> :
+                                                 appt.status === 'cancelled' ? <XCircleIcon size={14} /> :
+                                                 <ClockIcon size={14} />} {label}
                                             </span>
+
                                         </div>
 
                                         <div className="booking-meta">
@@ -133,9 +159,14 @@ const MyBookings = () => {
                                             <p className="booking-reason"><MessageIcon size={14} /> {appt.reason}</p>
                                         )}
 
-                                        {appt.status === 'Cancelled' && appt.cancelReason && (
-                                            <p className="booking-reason" style={{ color: '#dc2626' }}>Cancel reason: {appt.cancelReason}</p>
+                                        {appt.status === 'cancelled' && appt.cancelReason && (
+                                            <p className="booking-reason" style={{ color: '#64748b' }}>Cancel reason: {appt.cancelReason}</p>
                                         )}
+
+                                        {appt.status === 'rejected' && appt.cancelReason && (
+                                            <p className="booking-reason" style={{ color: '#dc2626' }}>Doctor's note: {appt.cancelReason}</p>
+                                        )}
+
 
                                         <div className="booking-footer-row">
                                             <span className="booked-on">Booked: {new Date(appt.createdAt).toLocaleDateString()}</span>

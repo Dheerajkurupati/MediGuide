@@ -429,6 +429,24 @@
     margin-top: 0.75rem;
 }
 
+.form-group select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 12px;
+    font-size: 0.97rem;
+    outline: none;
+    background: #fff;
+    cursor: pointer;
+    transition: border-color 0.2s;
+    box-sizing: border-box;
+    appearance: none;
+}
+
+.form-group select:focus {
+    border-color: #2563eb;
+}
+
 .form-group textarea {
     width: 100%;
     padding: 0.8rem 1rem;
@@ -558,4 +576,209 @@
     .nav-links {
         display: none;
     }
+}
+
+/* ── Results count ── */
+.results-count {
+    color: #64748b;
+    font-size: 0.9rem;
+    margin-bottom: 1rem;
+}
+
+/* ── Clear search button ── */
+.clear-search {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: #e2e8f0;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    font-size: 0.75rem;
+    color: #475569;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s;
+}
+
+.clear-search:hover {
+    background: #cbd5e1;
+}
+
+/* ── Skeleton loading cards ── */
+.doctor-card.skeleton {
+    pointer-events: none;
+}
+
+.skeleton-avatar {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+    margin: 0 auto 1rem;
+}
+
+.skeleton-line {
+    height: 12px;
+    border-radius: 6px;
+    margin: 0.6rem auto;
+    background: linear-gradient(90deg, #e2e8f0 25%, #f1f5f9 50%, #e2e8f0 75%);
+    background-size: 200% 100%;
+    animation: shimmer 1.4s infinite;
+}
+
+.skeleton-line.long    { width: 80%; }
+.skeleton-line.medium  { width: 60%; }
+.skeleton-line.short   { width: 40%; }
+
+@keyframes shimmer {
+    0%   { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ── Available-days row on cards ── */
+.available-days-row {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin: 0.6rem 0;
+}
+
+.day-chip {
+    display: inline-block;
+    padding: 2px 7px;
+    border-radius: 6px;
+    font-size: 0.72rem;
+    font-weight: 600;
+}
+
+.day-chip.day-on {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+}
+
+.day-chip.day-off {
+    background: #f8fafc;
+    color: #cbd5e1;
+    border: 1px solid #e2e8f0;
+}
+
+/* smaller variant used inside modal */
+.day-chip.sm {
+    font-size: 0.68rem;
+    padding: 2px 5px;
+}
+
+/* ── Today badge on cards ── */
+.today-badge {
+    display: inline-block;
+    padding: 0.3rem 0.85rem;
+    border-radius: 20px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.today-badge.available {
+    background: #f0fdf4;
+    color: #16a34a;
+    border: 1px solid #bbf7d0;
+}
+
+.today-badge.unavailable {
+    background: #fef2f2;
+    color: #dc2626;
+    border: 1px solid #fecaca;
+}
+
+/* ── Available-days strip inside modal header ── */
+.modal-available-days {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-top: 0.75rem;
+    color: rgba(255,255,255,0.85);
+    font-size: 0.82rem;
+}
+
+/* ── Day label under date picker ── */
+.day-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-top: 0.4rem;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.available-day   { color: #16a34a; }
+.unavailable-day { color: #dc2626; }
+
+/* ── Booking error banner ── */
+.booking-error-banner {
+    background: #fef2f2;
+    border: 1px solid #fecaca;
+    color: #dc2626;
+    border-radius: 10px;
+    padding: 0.7rem 1rem;
+    font-size: 0.9rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 1rem;
+}
+
+/* ── Slots loading placeholder ── */
+.slots-loading {
+    text-align: center;
+    color: #94a3b8;
+    padding: 1.5rem;
+    font-size: 0.9rem;
+}
+
+/* ── Success screen details ── */
+.success-sub {
+    color: #64748b;
+    margin-bottom: 1.5rem;
+    font-size: 0.97rem;
+}
+
+.success-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid #f1f5f9;
+    font-size: 0.92rem;
+}
+
+.success-row:last-child { border-bottom: none; }
+.success-row span { color: #64748b; }
+.success-row strong { color: #0f172a; }
+
+/* ── Spinner inside confirm button ── */
+.btn-spinner {
+    display: inline-block;
+    width: 15px;
+    height: 15px;
+    border: 2px solid rgba(255,255,255,0.4);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+    vertical-align: middle;
+    margin-right: 6px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
 }

@@ -544,6 +544,34 @@
   font-size: 0.85rem;
 }
 
+.footer-portal-links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+}
+
+.footer-portal-btn {
+  background: transparent;
+  border: none;
+  color: #475569;
+  font-size: 0.82rem;
+  cursor: pointer;
+  padding: 0.2rem 0.5rem;
+  border-radius: 6px;
+  transition: color 0.2s;
+}
+
+.footer-portal-btn:hover {
+  color: #60a5fa;
+}
+
+.footer-sep {
+  color: #334155;
+  font-size: 0.85rem;
+}
+
 /* ═══════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════ */

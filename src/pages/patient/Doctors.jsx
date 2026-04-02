@@ -278,6 +278,7 @@ const Doctors = () => {
                                             {doctor.specialization}
                                         </span>
                                         <p className="designation">{doctor.designation}</p>
+                                        {/* Qualification and Fee removed */}
 
                                         {/* Available days chips */}
                                         <div className="available-days-row">

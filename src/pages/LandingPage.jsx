@@ -222,11 +222,19 @@ const LandingPage = () => {
                 </div>
             </section>
 
-            {/* ── Footer ── */}
             <footer className="landing-footer">
                 <div className="footer-inner">
                     <div className="footer-logo"><CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} /> CityCare Hospital</div>
                     <p>Providing compassionate care with cutting-edge technology.</p>
+                    <div className="footer-portal-links">
+                        <button className="footer-portal-btn" onClick={() => navigate('/doctor-login')}>
+                            🩺 Doctor Portal
+                        </button>
+                        <span className="footer-sep">·</span>
+                        <button className="footer-portal-btn" onClick={() => navigate('/admin-login')}>
+                            🛠️ Admin Portal
+                        </button>
+                    </div>
                     <p className="footer-copy">&copy; 2026 CityCare Hospital. All rights reserved.</p>
                 </div>
             </footer>

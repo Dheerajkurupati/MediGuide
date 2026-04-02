@@ -5,13 +5,14 @@ import {
     getAllUsers,
     getAllAppointments,
     updateAppointmentStatus,
-    getCurrentUser
+    getCurrentUser,
+    addDoctor
 } from '../../utils/supabaseDatabase';
 import './AdminDashboard.css';
 import { CrossIcon, ClipboardIcon, StethoscopeIcon, UsersIcon } from '../../components/Icons';
 
 const TABS = ['Appointments', 'Doctors', 'Registered Users'];
-const STATUS_OPTIONS = ['Confirmed', 'Completed', 'Cancelled'];
+const STATUS_OPTIONS = ['pending', 'accepted', 'rejected', 'completed', 'cancelled'];
 
 const AdminDashboard = () => {
     const navigate = useNavigate();
@@ -24,6 +25,18 @@ const AdminDashboard = () => {
     const [statusFilter, setStatusFilter] = useState('All');
     const [dateFilter, setDateFilter] = useState('');
     const [doctorDate, setDoctorDate] = useState(new Date().toISOString().split('T')[0]);
+
+    // Add Doctor Form State
+    const [showAddDoctor, setShowAddDoctor] = useState(false);
+    const [addingDoctor, setAddingDoctor] = useState(false);
+    const [docForm, setDocForm] = useState({
+        name: '', email: '', password: '', 
+        specialization: 'Cardiology', designation: ''
+    });
+    const INITIAL_DOC_FORM = {
+        name: '', email: '', password: '', 
+        specialization: 'Cardiology', designation: ''
+    };
 
     useEffect(() => {
         const user = getCurrentUser();
@@ -44,7 +57,7 @@ const AdminDashboard = () => {
 
     const handleStatusChange = async (appointmentId, newStatus) => {
         let reason = '';
-        if (newStatus === 'Cancelled') {
+        if (newStatus === 'cancelled') {
             reason = prompt('Please enter a reason for cancellation:');
             if (!reason) return;
         }
@@ -59,6 +72,27 @@ const AdminDashboard = () => {
         // Reload appointments from Supabase
         const appts = await getAllAppointments();
         setAppointments(appts);
+    };
+
+    const handleAddDoctorSubmit = async (e) => {
+        e.preventDefault();
+        setAddingDoctor(true);
+
+        const result = await addDoctor({
+            ...docForm,
+            available_days: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
+            time_slots: ['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM']
+        });
+        setAddingDoctor(false);
+
+        if (result.success) {
+            alert(`Doctor added! Doctor ID: ${result.doctorId}`);
+            setShowAddDoctor(false);
+            setDocForm(INITIAL_DOC_FORM);
+            setDoctors(await getDoctors());
+        } else {
+            alert(`Error: ${result.message}`);
+        }
     };
 
     const filteredAppointments = appointments.filter(a => {
@@ -90,16 +124,17 @@ const AdminDashboard = () => {
         : doctorsOnDay;
 
     const statusColor = (s) => ({
-        Confirmed: { bg: '#f0fdf4', color: '#16a34a' },
-        Waitlist: { bg: '#fffbeb', color: '#d97706' },
-        Cancelled: { bg: '#fef2f2', color: '#dc2626' },
-        Completed: { bg: '#f0f9ff', color: '#0284c7' }
+        pending: { bg: '#fffbeb', color: '#d97706' },
+        accepted: { bg: '#f0fdf4', color: '#16a34a' },
+        rejected: { bg: '#fef2f2', color: '#dc2626' },
+        completed: { bg: '#f0f9ff', color: '#0284c7' },
+        cancelled: { bg: '#f1f5f9', color: '#64748b' }
     }[s] || { bg: '#f8fafc', color: '#64748b' });
 
     const stats = [
         { label: 'Total Appointments', value: appointments.length, icon: '📅', color: '#2563eb' },
-        { label: 'Confirmed', value: appointments.filter(a => a.status === 'Confirmed').length, icon: '✅', color: '#16a34a' },
-        { label: 'Completed', value: appointments.filter(a => a.status === 'Completed').length, icon: '✔️', color: '#0284c7' },
+        { label: 'Accepted', value: appointments.filter(a => a.status === 'accepted').length, icon: '✅', color: '#16a34a' },
+        { label: 'Pending', value: appointments.filter(a => a.status === 'pending').length, icon: '⏳', color: '#d97706' },
         { label: 'Registered Patients', value: users.length, icon: '👥', color: '#7c3aed' }
     ];
 
@@ -256,12 +291,12 @@ const AdminDashboard = () => {
                                                 <span className="tbl-badge" style={{ background: sc.bg, color: sc.color }}>
                                                     {a.status}
                                                 </span>
-                                                {a.status === 'Cancelled' && a.cancelReason && (
+                                                {(a.status === 'cancelled' || a.status === 'rejected') && a.cancelReason && (
                                                     <p className="cancel-reason">📝 {a.cancelReason}</p>
                                                 )}
                                             </td>
                                             <td>
-                                                {a.status === 'Completed' || a.status === 'Cancelled' ? (
+                                                {a.status === 'completed' || a.status === 'cancelled' ? (
                                                     <span className="status-locked">🔒 Final</span>
                                                 ) : (
                                                     <select
@@ -287,14 +322,24 @@ const AdminDashboard = () => {
         ────────────────────────────────────── */}
                 {activeTab === 'Doctors' && (
                     <div className="table-wrap">
-                        <div className="doctor-date-picker">
-                            <label>📅 Showing doctors available on:</label>
-                            <input
-                                type="date"
-                                value={doctorDate}
-                                onChange={e => setDoctorDate(e.target.value)}
-                            />
-                            <span className="day-tag">{selectedDayName}</span>
+                        <div className="doctor-date-picker" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                            <div>
+                                <label>📅 Showing doctors available on: </label>
+                                <input
+                                    type="date"
+                                    value={doctorDate}
+                                    onChange={e => setDoctorDate(e.target.value)}
+                                    style={{ marginLeft: 8, padding: '4px 8px', borderRadius: 4, border: '1px solid #cbd5e1' }}
+                                />
+                                <span className="day-tag" style={{ marginLeft: 8, background: '#e0e7ff', color: '#4338ca', padding: '2px 8px', borderRadius: 12, fontSize: '0.85rem' }}>{selectedDayName}</span>
+                            </div>
+                            <button 
+                                className="action-btn" 
+                                style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
+                                onClick={() => setShowAddDoctor(true)}
+                            >
+                                + Add New Doctor
+                            </button>
                         </div>
                         <table className="data-table">
                             <thead>
@@ -312,7 +357,7 @@ const AdminDashboard = () => {
                                 {filteredDoctors.length === 0 ? (
                                     <tr><td colSpan={7} className="empty-row">No doctors available on {selectedDayName}</td></tr>
                                 ) : filteredDoctors.map(d => {
-                                    const count = appointments.filter(a => a.doctorId === d.id && a.status !== 'Cancelled').length;
+                                    const count = appointments.filter(a => a.doctorId === d.id && a.status !== 'cancelled' && a.status !== 'rejected').length;
                                     return (
                                         <tr key={d.id}>
                                             <td><code className="booking-id">{d.id}</code></td>
@@ -398,6 +443,67 @@ const AdminDashboard = () => {
                     </div>
                 )}
             </div>
+
+            {/* ── Add Doctor Modal ── */}
+            {showAddDoctor && (
+                <div className="modal-backdrop" onClick={() => setShowAddDoctor(false)}>
+                    <div className="modal" style={{ maxWidth: '500px' }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <div>
+                                <h2>Register New Doctor</h2>
+                                <p style={{ color: '#64748b', fontSize: '0.9rem', marginTop: 4 }}>This will automatically generate their Doctor ID and create their login app credentials.</p>
+                            </div>
+                            <button className="modal-close" onClick={() => setShowAddDoctor(false)}>✕</button>
+                        </div>
+                        <div className="modal-body">
+                            <form onSubmit={handleAddDoctorSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Full Name</label>
+                                    <input type="text" required placeholder="John Doe" value={docForm.name} onChange={e => setDocForm({...docForm, name: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Email Address</label>
+                                    <input type="email" required placeholder="dr.john@citycare.com" value={docForm.email} onChange={e => setDocForm({...docForm, email: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                </div>
+                                <div className="form-group" style={{ marginBottom: 0 }}>
+                                    <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Password</label>
+                                    <input type="password" required minLength={6} placeholder="Secure password" value={docForm.password} onChange={e => setDocForm({...docForm, password: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                </div>
+                                
+                                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Specialization</label>
+                                        <select required value={docForm.specialization} onChange={e => setDocForm({...docForm, specialization: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', background: 'white' }}>
+                                            <option value="Cardiology">Cardiology</option>
+                                            <option value="Neurology">Neurology</option>
+                                            <option value="Dermatology">Dermatology</option>
+                                            <option value="Orthopedics">Orthopedics</option>
+                                            <option value="General Medicine">General Medicine</option>
+                                            <option value="Gastroenterology">Gastroenterology</option>
+                                            <option value="Pediatrics">Pediatrics</option>
+                                            <option value="ENT">ENT</option>
+                                        </select>
+                                    </div>
+                                    <div className="form-group" style={{ marginBottom: 0 }}>
+                                        <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Designation</label>
+                                        <input type="text" required placeholder="e.g. Senior Consultant" value={docForm.designation} onChange={e => setDocForm({...docForm, designation: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                    </div>
+                                </div>
+
+                                 {/* Qualification and Fee removed for simplicity */}
+
+                                <button 
+                                    type="submit" 
+                                    disabled={addingDoctor}
+                                    style={{ width: '100%', padding: '12px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 600, marginTop: '1rem', cursor: addingDoctor ? 'not-allowed' : 'pointer', opacity: addingDoctor ? 0.7 : 1 }}
+                                >
+                                    {addingDoctor ? 'Registering Doctor...' : 'Register Doctor'}
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

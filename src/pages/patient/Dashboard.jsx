@@ -26,13 +26,13 @@ const Dashboard = () => {
             const appts = await getUserAppointments(currentUser.id);
             setStats({
                 total: appts.length,
-                confirmed: appts.filter(a => a.status === 'Confirmed').length,
-                completed: appts.filter(a => a.status === 'Completed').length,
-                cancelled: appts.filter(a => a.status === 'Cancelled').length
+                confirmed: appts.filter(a => a.status === 'accepted').length,
+                completed: appts.filter(a => a.status === 'completed').length,
+                cancelled: appts.filter(a => a.status === 'cancelled').length
             });
             const todayStr = new Date().toISOString().split('T')[0];
             const next = appts
-                .filter(a => a.status === 'Confirmed' && a.date >= todayStr)
+                .filter(a => a.status === 'accepted' && a.date >= todayStr)
                 .sort((a, b) => a.date.localeCompare(b.date))[0];
             setUpcoming(next || null);
         };
