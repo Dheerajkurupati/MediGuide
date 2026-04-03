@@ -1,9 +1,11 @@
-# MediGuide Hospital — Flask Email Backend
-# Handles: Gmail SMTP emails + Supabase operations for email flows
+# MediGuide Hospital — Flask Backend
+# Handles: Gmail SMTP emails + Supabase operations + MediGuide chatbot
 #
 # Routes:
 #   POST /api/send-otp           → Generate OTP, save to reset_password, email it
 #   POST /api/send-status-email  → Update appointment status, email patient, log to appointment_emails
+#   POST /chat                   → MediGuide chatbot triage endpoint
+#   GET  /api/health             → Health check
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
@@ -11,10 +13,13 @@ from supabase import create_client
 from dotenv import load_dotenv
 import smtplib
 import random
+import time
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from datetime import datetime, timedelta, timezone
 import os
+
+from chatbot_engine import TriageBot
 
 load_dotenv()
 
@@ -22,6 +27,17 @@ app = Flask(__name__)
 CORS(app, origins=["http://localhost:5173", "http://localhost:4173"])
 
 FLASK_PORT = 5050
+
+# ── MediGuide Chatbot ─────────────────────────────────────────
+SESSION_MAX  = 500   # max concurrent sessions kept in RAM
+CHATBOT_NAME = "MediGuide"
+DISCLAIMER   = (
+    "ℹ️ **Disclaimer:** This guidance is for informational purposes only and does not replace "
+    "professional medical consultation. Always consult with a qualified healthcare provider for medical advice."
+)
+
+bot      = TriageBot()
+sessions = {}
 
 # ── Supabase ──────────────────────────────────────────────────
 supabase = create_client(
@@ -32,7 +48,7 @@ supabase = create_client(
 # ── Gmail SMTP ────────────────────────────────────────────────
 GMAIL_USER     = os.getenv("GMAIL_USER")
 GMAIL_PASSWORD = os.getenv("GMAIL_APP_PASSWORD")
-HOSPITAL_NAME  = "MediGuide Hospital"
+HOSPITAL_NAME  = "CityCare Hospital"
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -124,9 +140,9 @@ def appointment_status_template(patient_name, doctor_name, date, time_slot, book
     status_text   = "✅ Confirmed" if is_accepted else "❌ Declined"
     heading       = "Your Appointment is Confirmed!" if is_accepted else "Your Appointment was Declined"
     message       = (
-        f"Great news! Dr. {doctor_name} has accepted your appointment request. Please arrive 10 minutes early."
+        f"Great news!  {doctor_name} has accepted your appointment request. Please arrive 10 minutes early."
         if is_accepted else
-        f"We're sorry, Dr. {doctor_name} has declined your appointment request."
+        f"We're sorry,  {doctor_name} has declined your appointment request."
     )
 
     note_section = ""
@@ -180,7 +196,7 @@ def appointment_status_template(patient_name, doctor_name, date, time_slot, book
           <p>Dear {patient_name},<br>{message}</p>
           {note_section}
           <table class="details-table">
-            <tr><td>Doctor</td><td>Dr. {doctor_name}</td></tr>
+            <tr><td>Doctor</td><td> {doctor_name}</td></tr>
             <tr><td>Date</td><td>{date}</td></tr>
             <tr><td>Time</td><td>{time_slot}</td></tr>
             <tr><td>Status</td><td>{status_text}</td></tr>
@@ -338,12 +354,215 @@ def send_status_email():
 
 
 # ═══════════════════════════════════════════════════════════════
+# ROUTE 3 — MEDIGUIDE CHATBOT
+# ═══════════════════════════════════════════════════════════════
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    data    = request.json or {}
+    user_id = data.get("user_id", "default_user")
+    message = (data.get("message") or "").strip()
+
+    # --- Session cleanup: remove sessions idle > 30 min ---
+    cutoff  = time.time() - 1800
+    expired = [k for k, v in sessions.items() if v.get("last_active", 0) < cutoff]
+    for k in expired:
+        del sessions[k]
+
+    # --- Session cap: evict oldest if limit exceeded ---
+    if len(sessions) > SESSION_MAX:
+        oldest = sorted(sessions.items(), key=lambda x: x[1].get("last_active", 0))
+        for k, _ in oldest[:len(sessions) - SESSION_MAX]:
+            del sessions[k]
+
+    # Initialise session for new user
+    if user_id not in sessions:
+        sessions[user_id] = {
+            "step": "START",
+            "symptom": None,
+            "duration": None,
+            "severity": None,
+            "severity_score": None,
+            "answers": [],
+            "disclaimer_shown": False,
+            "last_active": time.time()
+        }
+
+    sessions[user_id]["last_active"] = time.time()
+    state = sessions[user_id]
+
+    # === EMERGENCY CHECK (highest priority) ===
+    if state["step"] == "START":
+        is_emergency, emergency_msg = bot.detect_emergency(message)
+    else:
+        is_emergency, emergency_msg = bot.detect_emergency_critical(message)
+
+    if is_emergency:
+        sessions[user_id] = {
+            "step": "COMPLETED",
+            "symptom": None, "duration": None, "severity": None,
+            "severity_score": None, "answers": [],
+            "disclaimer_shown": True, "last_active": time.time()
+        }
+        return jsonify({"reply": emergency_msg, "decision": "EMERGENCY", "options": ["Start Over"]})
+
+    # === GREETING DETECTION ===
+    if bot.detect_greeting(message) and state["step"] == "START":
+        return jsonify({
+            "reply": (
+                f"Hello! I'm **{CHATBOT_NAME}**, your Hospital Guidance Assistant. 🏥\n\n"
+                "I'm here to help guide you based on your symptoms. "
+                "Please describe the main problem or symptom you are experiencing."
+            ),
+            "options": []
+        })
+
+    # === RESTART AFTER COMPLETION ===
+    if state["step"] == "COMPLETED":
+        if any(word in message.lower() for word in ["start", "new", "hi", "hello", "restart"]):
+            sessions[user_id] = {
+                "step": "START",
+                "symptom": None, "duration": None, "severity": None,
+                "severity_score": None, "answers": [], "disclaimer_shown": False,
+                "last_active": time.time()
+            }
+            return jsonify({
+                "reply": (
+                    f"Hello! I'm **{CHATBOT_NAME}**, your Hospital Guidance Assistant. 🏥\n\n"
+                    "How can I help you today? Please describe your symptoms."
+                ),
+                "options": []
+            })
+        return jsonify({
+            "reply": "I'm here if you need anything else. You can say 'Start Over' to begin a new assessment.",
+            "options": ["Start Over"]
+        })
+
+    # === STEP 1: SYMPTOM COLLECTION ===
+    if state["step"] == "START":
+        symptoms_found = bot.extract_symptoms(message)
+        if symptoms_found:
+            symptom = symptoms_found[0]
+            state["symptom"] = symptom
+            state["step"]    = "DURATION"
+            symptom_display  = symptom.replace("_", " ").title()
+            return jsonify({
+                "reply": (
+                    f"I understand you're experiencing **{symptom_display}**. "
+                    f"How long have you been experiencing this symptom?"
+                ),
+                "options": []
+            })
+        return jsonify({
+            "reply": (
+                "I'm sorry, I didn't quite catch that. Could you describe your symptom more specifically?\n\n"
+                "*(For example: 'I have a headache', 'My stomach hurts', or 'I have a cough')*"
+            ),
+            "options": []
+        })
+
+    # === STEP 2: DURATION ===
+    if state["step"] == "DURATION":
+        duration_info = bot.extract_duration(message)
+        if duration_info == (None, None):
+            return jsonify({
+                "reply": "I couldn't quite catch that. Could you tell me how long you've been experiencing this symptom? For example, the number of hours or days.",
+                "options": []
+            })
+        state["duration"] = duration_info
+        state["step"]     = "SEVERITY"
+        return jsonify({"reply": "Thank you. How would you describe the severity of your symptom?", "options": []})
+
+    # === STEP 3: SEVERITY ===
+    if state["step"] == "SEVERITY":
+        severity_data = bot.extract_severity(message)
+        if severity_data is None:
+            return jsonify({
+                "reply": "I didn't quite catch that. Could you describe how severe it is? You can use words like mild, moderate, or severe, or give a number from 1 to 10.",
+                "options": []
+            })
+        severity_label, severity_score = severity_data
+        state["severity"]       = severity_label
+        state["severity_score"] = severity_score
+        state["step"]           = "FOLLOW_UP_Q1"
+        questions = bot.symptoms_data[state["symptom"]]["questions"]
+        return jsonify({
+            "reply": f"Understood, thank you. Now, I have a few more questions to better assess your situation.\n\n{questions[0]}",
+            "options": [], "question_num": 1, "question_total": len(questions)
+        })
+
+    # === STEP 4-N: FOLLOW-UP QUESTIONS ===
+    symptom   = state["symptom"]
+    questions = bot.symptoms_data[symptom]["questions"]
+
+    if state["step"].startswith("FOLLOW_UP_Q"):
+        current_q_index   = len(state["answers"])
+        current_question  = questions[current_q_index]
+        YES_NO_TRIGGERS   = ["are you", "do you", "can you", "have you", "did you", "is there", "is it"]
+        is_yes_no_q       = "?" in current_question and any(
+            t in current_question.lower() for t in YES_NO_TRIGGERS
+        )
+        if is_yes_no_q:
+            yes_no = bot.nlp.extract_yes_no(message.lower())
+            if yes_no is None:
+                return jsonify({
+                    "reply": f"Could you please answer with Yes or No?\n\n{current_question}",
+                    "options": []
+                })
+        state["answers"].append(message)
+        current_q_num = len(state["answers"])
+
+        if current_q_num < len(questions):
+            state["step"] = f"FOLLOW_UP_Q{current_q_num + 1}"
+            return jsonify({
+                "reply": questions[current_q_num], "options": [],
+                "question_num": current_q_num + 1, "question_total": len(questions)
+            })
+
+        # === FINAL ML CLASSIFICATION ===
+        yes_no_answers = [
+            state["answers"][i]
+            for i, q in enumerate(questions)
+            if i < len(state["answers"]) and "?" in q
+            and any(t in q.lower() for t in YES_NO_TRIGGERS)
+        ]
+        result = bot.classify_issue_ml(
+            symptom          = symptom,
+            duration_info    = state["duration"],
+            severity_data    = (state["severity"], state["severity_score"]),
+            follow_up_answers = yes_no_answers
+        )
+        state["step"] = "COMPLETED"
+
+        final_msg = result["message"]
+        if result["decision"] == "MINOR":
+            final_msg += f"\n\n**📋 Home Care Recommendations:**\n{result['home_care']}"
+            final_msg += f"\n\n**⚠️ Warning Signs - Seek Care If:**\n{result['warning_signs']}"
+        if not state["disclaimer_shown"]:
+            final_msg += f"\n\n{DISCLAIMER}"
+            state["disclaimer_shown"] = True
+        final_msg += "\n\n**I hope you feel better soon!** 🌟"
+
+        response = {
+            "reply": final_msg,
+            "decision": result["decision"],
+            "dept": result.get("dept"),
+            "options": ["Start Over"]
+        }
+        if result["decision"] == "CONSULTATION":
+            response["doctors"] = bot.get_doctors_for_dept(result["dept"])
+        return jsonify(response)
+
+    return jsonify({"reply": "Something went wrong. Please say 'Start Over' to begin again.", "options": ["Start Over"]})
+
+
+# ═══════════════════════════════════════════════════════════════
 # HEALTH CHECK
 # ═══════════════════════════════════════════════════════════════
 
 @app.route("/api/health", methods=["GET"])
 def health():
-    return jsonify({"status": "ok", "service": f"{HOSPITAL_NAME} Email API"})
+    return jsonify({"status": "ok", "service": f"{HOSPITAL_NAME} Email API", "chatbot": CHATBOT_NAME})
 
 
 if __name__ == "__main__":

@@ -1,0 +1,218 @@
+{
+  "Neurology": [
+    {
+      "name": "Dr. Aris Thorne",
+      "experience": "12 years",
+      "specialization": "Headache & Migraine Specialist"
+    },
+    {
+      "name": "Dr. Sarah Miller",
+      "experience": "8 years",
+      "specialization": "Neurologist"
+    }
+  ],
+  "Cardiology": [
+    {
+      "name": "Dr. James Carter",
+      "experience": "18 years",
+      "specialization": "Interventional Cardiologist"
+    },
+    {
+      "name": "Dr. Emily Watson",
+      "experience": "15 years",
+      "specialization": "Heart Specialist"
+    }
+  ],
+  "Pulmonology": [
+    {
+      "name": "Dr. Michael Chen",
+      "experience": "14 years",
+      "specialization": "Respiratory Specialist"
+    },
+    {
+      "name": "Dr. Lisa Anderson",
+      "experience": "10 years",
+      "specialization": "Pulmonologist"
+    }
+  ],
+  "Gastroenterology": [
+    {
+      "name": "Dr. Vikas Khanna",
+      "experience": "15 years",
+      "specialization": "Digestive Disorders Specialist"
+    },
+    {
+      "name": "Dr. Elena Rossi",
+      "experience": "10 years",
+      "specialization": "Gastroenterologist"
+    }
+  ],
+  "Internal Medicine": [
+    {
+      "name": "Dr. John Smith",
+      "experience": "20 years",
+      "specialization": "General Physician"
+    },
+    {
+      "name": "Dr. Rachel Green",
+      "experience": "12 years",
+      "specialization": "Internal Medicine Specialist"
+    }
+  ],
+  "Orthopedics": [
+    {
+      "name": "Dr. David Murphy",
+      "experience": "16 years",
+      "specialization": "Orthopedic Surgeon"
+    },
+    {
+      "name": "Dr. Priya Sharma",
+      "experience": "11 years",
+      "specialization": "Bone & Joint Specialist"
+    }
+  ],
+  "ENT": [
+    {
+      "name": "Dr. William Brown",
+      "experience": "13 years",
+      "specialization": "Ear, Nose & Throat Specialist"
+    },
+    {
+      "name": "Dr. Sophia Lee",
+      "experience": "9 years",
+      "specialization": "ENT Consultant"
+    }
+  ],
+  "Dermatology": [
+    {
+      "name": "Dr. Amanda White",
+      "experience": "14 years",
+      "specialization": "Skin Specialist"
+    },
+    {
+      "name": "Dr. Robert Taylor",
+      "experience": "10 years",
+      "specialization": "Dermatologist"
+    }
+  ],
+  "Rheumatology": [
+    {
+      "name": "Dr. Jessica Martinez",
+      "experience": "12 years",
+      "specialization": "Arthritis & Joint Specialist"
+    },
+    {
+      "name": "Dr. Daniel Kim",
+      "experience": "8 years",
+      "specialization": "Rheumatologist"
+    }
+  ],
+  "Psychiatry": [
+    {
+      "name": "Dr. Laura Bennett",
+      "experience": "15 years",
+      "specialization": "Mental Health Specialist"
+    },
+    {
+      "name": "Dr. Kevin O'Brien",
+      "experience": "11 years",
+      "specialization": "Psychiatrist"
+    }
+  ],
+  "Ophthalmology": [
+    {
+      "name": "Dr. Maria Garcia",
+      "experience": "13 years",
+      "specialization": "Eye Specialist"
+    },
+    {
+      "name": "Dr. Christopher Evans",
+      "experience": "9 years",
+      "specialization": "Ophthalmologist"
+    }
+  ],
+  "Dentistry": [
+    {
+      "name": "Dr. Jennifer Wilson",
+      "experience": "10 years",
+      "specialization": "Dental Surgeon"
+    },
+    {
+      "name": "Dr. Mark Johnson",
+      "experience": "8 years",
+      "specialization": "Dentist"
+    }
+  ],
+  "Emergency Medicine": [
+    {
+      "name": "Dr. Alex Thompson",
+      "experience": "14 years",
+      "specialization": "Emergency Physician"
+    },
+    {
+      "name": "Dr. Natalie Adams",
+      "experience": "12 years",
+      "specialization": "Trauma Specialist"
+    }
+  ],
+  "Urology": [
+    {
+      "name": "Dr. Steven Harris",
+      "experience": "16 years",
+      "specialization": "Urologist"
+    },
+    {
+      "name": "Dr. Linda Martinez",
+      "experience": "11 years",
+      "specialization": "Urinary Tract Specialist"
+    }
+  ],
+  "Allergy and Immunology": [
+    {
+      "name": "Dr. Patricia Clark",
+      "experience": "13 years",
+      "specialization": "Allergist"
+    },
+    {
+      "name": "Dr. Richard Lewis",
+      "experience": "9 years",
+      "specialization": "Immunology Specialist"
+    }
+  ],
+  "Gynecology": [
+    {
+      "name": "Dr. Karen Robinson",
+      "experience": "17 years",
+      "specialization": "Gynecologist"
+    },
+    {
+      "name": "Dr. Michelle Walker",
+      "experience": "12 years",
+      "specialization": "Women's Health Specialist"
+    }
+  ],
+  "Obstetrics": [
+    {
+      "name": "Dr. Susan Hall",
+      "experience": "15 years",
+      "specialization": "Obstetrician"
+    },
+    {
+      "name": "Dr. Nancy Allen",
+      "experience": "10 years",
+      "specialization": "Pregnancy Specialist"
+    }
+  ],
+  "General Medicine": [
+    {
+      "name": "Dr. Thomas Young",
+      "experience": "14 years",
+      "specialization": "General Practitioner"
+    },
+    {
+      "name": "Dr. Barbara King",
+      "experience": "11 years",
+      "specialization": "Family Medicine"
+    }
+  ]
+}

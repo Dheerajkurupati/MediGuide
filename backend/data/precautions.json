@@ -1,0 +1,198 @@
+{
+  "headache": {
+    "home_care": "Rest in a quiet, dark room. Stay hydrated and avoid screen time. You may use over-the-counter pain relievers as directed.",
+    "warning_signs": "Seek immediate care if: sudden severe headache unlike any before, confusion, vision changes, weakness in limbs, or stiff neck."
+  },
+  "fever": {
+    "home_care": "Drink plenty of fluids, wear light clothing, and monitor your temperature regularly. Rest and use fever-reducing medication as needed.",
+    "warning_signs": "Seek immediate care if: temperature exceeds 103°F (39.4°C), difficulty breathing, stiff neck with headache, or confusion occurs."
+  },
+  "chest_pain": {
+    "home_care": "Chest pain requires medical evaluation. If you are unsure about severity, contact your doctor or visit a clinic promptly.",
+    "warning_signs": "Seek IMMEDIATE emergency care if: crushing pain, pain spreading to arm or jaw, sweating, shortness of breath, or nausea."
+  },
+  "breathing_difficulty": {
+    "home_care": "Sit upright, stay calm, and breathe slowly. If you have a prescribed inhaler, use it as directed.",
+    "warning_signs": "Seek IMMEDIATE emergency care if: severe difficulty breathing, blue lips, chest pain, or unable to speak in full sentences."
+  },
+  "stomach_pain": {
+    "home_care": "Stick to a bland diet (toast, rice, bananas). Avoid spicy or oily foods and stay hydrated with small sips of water.",
+    "warning_signs": "Seek immediate care if: severe pain, vomiting blood, black stools, unable to keep fluids down, or pain worsens rapidly."
+  },
+  "cough": {
+    "home_care": "Use a humidifier, drink warm honey-lemon tea, and get plenty of rest. Avoid irritants like smoke or dust.",
+    "warning_signs": "Seek immediate care if: coughing blood, severe chest pain, difficulty breathing, or lips turn blue."
+  },
+  "nausea": {
+    "home_care": "Rest your stomach, sip clear fluids (water, ginger tea) slowly. Avoid solid food until nausea settles. Ginger or peppermint may help.",
+    "warning_signs": "Seek immediate care if: vomiting blood, signs of severe dehydration (no urination, dry mouth, dizziness), or nausea with severe abdominal pain."
+  },
+  "vomiting": {
+    "home_care": "Rest your stomach for 1-2 hours, then try small sips of clear fluids. Gradually return to bland foods when you can tolerate them.",
+    "warning_signs": "Seek immediate care if: blood in vomit, can't keep any fluids down for 12+ hours, severe abdominal pain, or signs of dehydration."
+  },
+  "diarrhea": {
+    "home_care": "Drink oral rehydration fluids (ORS) to replace lost fluids and salts. Eat bland foods (bananas, rice, toast). Avoid dairy and fatty foods.",
+    "warning_signs": "Seek immediate care if: blood in stool, more than 8 episodes in a day, signs of dehydration, or high fever along with diarrhea."
+  },
+  "dizziness": {
+    "home_care": "Sit or lie down immediately. Stay hydrated and avoid sudden movements. Rest until the feeling passes. Rise slowly from seated positions.",
+    "warning_signs": "Seek immediate care if: fainting, chest pain, severe headache, slurred speech, or falls occur."
+  },
+  "fatigue": {
+    "home_care": "Ensure 7-9 hours of sleep per night. Stay hydrated, eat balanced meals, and take short breaks during the day. Gentle light exercise may help.",
+    "warning_signs": "Seek immediate care if: fatigue with chest pain, shortness of breath, confusion, sudden extreme weakness, or unexplained rapid weight loss."
+  },
+  "back_pain": {
+    "home_care": "Apply a warm or cold compress to the affected area. Avoid strenuous activity. Gentle stretching and walking may help. Maintain good posture.",
+    "warning_signs": "Seek immediate care if: numbness or tingling in legs, loss of bladder or bowel control, or sudden severe weakness in legs."
+  },
+  "sore_throat": {
+    "home_care": "Gargle with warm salt water, drink warm liquids, and use throat lozenges. Stay hydrated and rest your voice.",
+    "warning_signs": "Seek immediate care if: difficulty breathing, unable to swallow liquids, drooling, or severe throat swelling."
+  },
+  "rash": {
+    "home_care": "Avoid scratching. Apply cool compresses and use fragrance-free moisturizer. Avoid known allergens or irritants. Keep the area clean and dry.",
+    "warning_signs": "Seek immediate care if: difficulty breathing after rash appears, facial or tongue swelling, rash with high fever, or rapidly spreading rash."
+  },
+  "joint_pain": {
+    "home_care": "Rest the affected joint. Apply ice for the first 48 hours then switch to warmth. Use a supportive bandage if needed. Avoid activities that worsen pain.",
+    "warning_signs": "Seek immediate care if: severe swelling with redness and heat, joint appears deformed, you cannot move it at all, or pain follows a significant injury."
+  },
+  "muscle_pain": {
+    "home_care": "Rest the affected muscles. Apply ice for 20 minutes then warm compress. Gentle stretching after 48 hours. Stay hydrated.",
+    "warning_signs": "Seek immediate care if: severe weakness, unable to move a limb, urine turns dark or brown (sign of muscle breakdown), or very high fever."
+  },
+  "anxiety": {
+    "home_care": "Practice slow deep breathing (inhale 4 sec, hold 4 sec, exhale 6 sec). Reduce caffeine and screen time. Take a short walk. Talk to someone you trust.",
+    "warning_signs": "Seek immediate care if: you are having thoughts of harming yourself, chest pain with anxiety, or severe panic that does not settle within an hour."
+  },
+  "depression": {
+    "home_care": "Maintain a daily routine. Connect with supportive people. Light physical activity can help. Avoid alcohol. Consider speaking with a counsellor.",
+    "warning_signs": "Seek immediate care if: you are having thoughts of self-harm or suicide. Contact a mental health helpline or go to the nearest hospital."
+  },
+  "insomnia": {
+    "home_care": "Keep a consistent sleep schedule. Avoid screens 1 hour before bed. Keep your bedroom cool and dark. Avoid caffeine after noon.",
+    "warning_signs": "Seek care if: insomnia persists more than 3 weeks, is severely affecting work or daily life, or is accompanied by depression or anxiety."
+  },
+  "ear_pain": {
+    "home_care": "Apply a warm cloth over the ear for comfort. Keep the ear dry. Avoid inserting objects into the ear canal. Over-the-counter pain relief may help.",
+    "warning_signs": "Seek immediate care if: severe pain, discharge with blood or pus from the ear, sudden hearing loss, dizziness, or facial weakness."
+  },
+  "eye_pain": {
+    "home_care": "Rest your eyes and avoid bright screens. If something is in the eye, rinse gently with clean water. Do not rub the eye.",
+    "warning_signs": "Seek immediate care if: sudden vision loss, severe eye pain, chemical exposure, visible injury to the eye, or eye pain after wearing contacts."
+  },
+  "toothache": {
+    "home_care": "Rinse with warm salt water. Apply a cold pack to the cheek for swelling. Over-the-counter dental gel may temporarily relieve pain. Book a dental appointment.",
+    "warning_signs": "Seek immediate care if: severe jaw or face swelling, difficulty opening mouth, difficulty swallowing or breathing, or high fever with toothache."
+  },
+  "bleeding": {
+    "home_care": "Apply firm, direct pressure to the wound with a clean cloth. Keep the area elevated above heart level if possible. Do not remove the cloth if soaked — add more on top.",
+    "warning_signs": "Seek immediate care if: bleeding does not stop after 10 minutes of pressure, blood spurts from the wound, wound is very deep, or you feel faint."
+  },
+  "swelling": {
+    "home_care": "Elevate the swollen area. Apply a cold compress for the first 24 hours. Avoid salt if swelling is in legs or abdomen. Rest the affected area.",
+    "warning_signs": "Seek immediate care if: swelling involves the face or throat, there is difficulty breathing, the area is extremely painful and red, or swelling came on very suddenly."
+  },
+  "numbness": {
+    "home_care": "Change position if numbness is due to sitting or lying in one spot. Gentle movement and stretching may help restore sensation.",
+    "warning_signs": "Seek immediate care if: numbness is sudden and affects one side of the body, face, or is accompanied by slurred speech, weakness, or confusion — these can be stroke signs."
+  },
+  "confusion": {
+    "home_care": "Sit the person in a safe, quiet place. Ensure they are hydrated. Do not leave them alone. Check for any obvious cause (overheating, low blood sugar).",
+    "warning_signs": "Seek IMMEDIATE emergency care if: confusion came on suddenly, is accompanied by high fever, severe headache, loss of consciousness, or the person cannot recognise family."
+  },
+  "seizure": {
+    "home_care": "Protect the person from injury — move hard objects away. Lay them on their side. Do not restrain them or put anything in their mouth. Time the seizure.",
+    "warning_signs": "Seek IMMEDIATE emergency care if: seizure lasts more than 5 minutes, the person does not regain consciousness, a second seizure follows, or this is their first-ever seizure."
+  },
+  "loss_of_consciousness": {
+    "home_care": "Lay the person on their side (recovery position). Check they are breathing. Do not give food or water. Stay with them until help arrives.",
+    "warning_signs": "This always warrants emergency assessment. Call emergency services (108) immediately if someone has lost consciousness."
+  },
+  "palpitations": {
+    "home_care": "Sit down and rest. Take slow, deep breaths. Avoid caffeine and stimulants. Splashing cold water on the face may help calm the heart rate.",
+    "warning_signs": "Seek immediate care if: palpitations with chest pain, shortness of breath, fainting, or if they last more than a few minutes without settling."
+  },
+  "weight_loss": {
+    "home_care": "Eat small, frequent, nutrient-rich meals. Stay hydrated. Track your weight weekly. Rule out stress or dietary changes as a cause.",
+    "warning_signs": "Seek care if: unintentional loss of more than 5% of body weight over 6 months, loss of appetite, night sweats, or fatigue — these need investigation."
+  },
+  "weight_gain": {
+    "home_care": "Review dietary habits and reduce processed foods and sugar. Aim for regular moderate physical activity. Ensure adequate sleep.",
+    "warning_signs": "Seek care if: rapid unexplained weight gain, swelling in legs or abdomen, shortness of breath, or if you suspect a thyroid or hormonal issue."
+  },
+  "urination_problems": {
+    "home_care": "Drink plenty of water. Avoid caffeine and alcohol. Do not hold urine for long periods. Warm compresses on the lower abdomen may ease discomfort.",
+    "warning_signs": "Seek immediate care if: complete inability to urinate, blood in urine, severe pain in the back or side, or high fever with urination problems."
+  },
+  "injury": {
+    "home_care": "For minor injuries: clean the wound gently, apply pressure to stop bleeding, and use an ice pack for swelling. Keep the area elevated and rested.",
+    "warning_signs": "Seek immediate care if: heavy bleeding that will not stop, bone is visible, severe pain, obvious deformity, or loss of function in the injured area."
+  },
+  "neck_pain": {
+    "home_care": "Rest and avoid heavy lifting or straining. Apply a warm compress to the sore area. Gentle neck stretches (slow side to side) may help. Use a supportive pillow while sleeping.",
+    "warning_signs": "Seek immediate care if: neck pain after an injury or fall, pain radiates down the arms, you experience numbness or weakness, severe headache with stiff neck, or you develop a fever."
+  },
+  "burn": {
+    "home_care": "For minor burns: cool the burn under cool (not cold) running water for 10-20 minutes. Cover loosely with a clean non-stick bandage. Do not use ice, butter, or toothpaste.",
+    "warning_signs": "Seek immediate care if: the burn is large, on the face, hands, genitals, or joints, has blisters or charred skin, was caused by electricity or chemicals, or you are in severe pain."
+  },
+  "allergic_reaction": {
+    "home_care": "Remove or avoid the trigger if known. For mild reactions (skin rash, itching), over-the-counter antihistamines may help. Stay calm and monitor closely.",
+    "warning_signs": "Seek IMMEDIATE emergency care if: throat or tongue swelling, difficulty breathing, dizziness, rapid heartbeat, or you feel faint — these are signs of anaphylaxis."
+  },
+  "cold_flu": {
+    "home_care": "Rest, drink plenty of warm fluids, and take over-the-counter cold relief medication as needed. Gargle with warm salt water for a sore throat. Use a humidifier.",
+    "warning_signs": "Seek care if: high fever above 103°F (39.4°C), difficulty breathing, chest pain, symptoms lasting more than 10 days, or you feel unusually very weak."
+  },
+  "abdominal_bloating": {
+    "home_care": "Eat slowly, avoid carbonated drinks, and reduce high-gas foods (beans, cabbage, broccoli). Light walking after meals can help. Keep a food diary to identify triggers.",
+    "warning_signs": "Seek immediate care if: severe abdominal pain, unable to pass gas or stool for several days, vomiting, or abdomen is visibly distended and hard."
+  },
+  "constipation": {
+    "home_care": "Increase fibre in your diet (fruits, vegetables, whole grains). Drink 8-10 glasses of water daily. Exercise regularly. Prune juice or warm water in the morning can help.",
+    "warning_signs": "Seek immediate care if: no bowel movement for more than 3 days with severe pain, blood in stool, vomiting, or your abdomen is bloated and hard."
+  },
+  "heartburn": {
+    "home_care": "Avoid spicy, fatty, and acidic foods. Eat smaller meals. Do not lie down immediately after eating. Elevate the head of your bed. Over-the-counter antacids may help.",
+    "warning_signs": "Seek care if: heartburn occurs more than twice a week, does not improve with antacids, or is accompanied by difficulty swallowing, chest pain, or black stools."
+  },
+  "skin_discoloration": {
+    "home_care": "Monitor the area and note any changes in size or spread. Keep a photo record if it is changing. Protect the area from sun exposure. Avoid scratching.",
+    "warning_signs": "Seek immediate care if: yellow skin (possible jaundice), blue-tinted lips or fingertips, skin discoloration with pain, swelling, or rapid spreading — these need urgent evaluation."
+  },
+  "hair_loss": {
+    "home_care": "Use gentle, sulphate-free shampoo. Avoid tight hairstyles, heat styling, and harsh treatments. Ensure a balanced diet rich in iron, protein, and vitamins. Manage stress.",
+    "warning_signs": "Seek care if: sudden patchy hair loss, hair loss with scalp scaling or crusting, hair loss accompanied by fatigue and weight changes (possible thyroid issue), or it is rapid and widespread."
+  },
+  "weakness": {
+    "home_care": "Rest and ensure adequate nutrition and hydration. Eat iron-rich foods if anaemia is suspected. Avoid overexertion. Light activity such as short walks may help gradually.",
+    "warning_signs": "Seek IMMEDIATE emergency care if: sudden weakness on one side of the body, weakness with slurred speech or facial drooping (stroke signs), inability to move a limb, or severe sudden onset."
+  },
+  "tremor": {
+    "home_care": "Rest the affected limb. Reduce caffeine and alcohol intake. Manage stress with relaxation techniques. Note when tremors occur (at rest vs. during movement) for your doctor.",
+    "warning_signs": "Seek care if: tremors are new and progressively worsening, interfere with daily tasks, occur along with confusion or difficulty walking, or begin suddenly after a head injury."
+  },
+  "vision_problems": {
+    "home_care": "Rest your eyes and avoid prolonged screen time. Ensure good lighting when reading. If you wear glasses, check your prescription is up to date. Stay hydrated.",
+    "warning_signs": "Seek IMMEDIATE emergency care if: sudden loss of vision in one or both eyes, flashing lights or a curtain effect across vision, double vision after a head injury, or severe eye pain."
+  },
+  "hearing_loss": {
+    "home_care": "Avoid loud noises and use ear protection in noisy environments. Do not insert objects into the ear canal. Keep ears dry. Speak to a pharmacist about earwax drops if build-up is suspected.",
+    "warning_signs": "Seek immediate care if: sudden complete hearing loss in one or both ears, hearing loss after a head injury, hearing loss with severe ear pain or discharge, or dizziness with hearing problems."
+  },
+  "menstrual_problems": {
+    "home_care": "For cramps: apply a warm heating pad to the lower abdomen. Stay hydrated and rest. Over-the-counter pain relief (ibuprofen) can help. Light exercise may ease discomfort.",
+    "warning_signs": "Seek immediate care if: extremely heavy bleeding (soaking more than one pad per hour), severe pelvic pain, bleeding between periods with dizziness, or a missed period with possible pregnancy."
+  },
+  "pregnancy_concerns": {
+    "home_care": "Attend all scheduled antenatal check-ups. Take prescribed folic acid and vitamins. Rest adequately, eat well, and avoid alcohol, smoking, and raw foods.",
+    "warning_signs": "Seek IMMEDIATE emergency care if: heavy vaginal bleeding, severe abdominal or back pain, reduced or absent foetal movement, sudden severe headache with vision changes, or swelling of face and hands."
+  },
+  "sexual_health_issues": {
+    "home_care": "Maintain good personal hygiene. Avoid sharing personal items. Stay well hydrated. If symptoms are mild, rest and monitor. Avoid sexual activity until reviewed by a doctor.",
+    "warning_signs": "Seek care if: unusual discharge, sores or lumps in the genital area, pain during urination, high fever with genital symptoms, or any concern about a sexually transmitted infection."
+  }
+}

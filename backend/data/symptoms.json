@@ -1,0 +1,1151 @@
+{
+  "headache": {
+    "keywords": [
+      "headache",
+      "head pain",
+      "migraine",
+      "head hurts",
+      "head ache",
+      "throbbing head",
+      "pounding head",
+      "head pressure"
+    ],
+    "questions": [
+      "Where is the pain located? (front, back, sides, or all over)",
+      "Does the pain get worse with movement or light?",
+      "Are you experiencing any confusion, slurred speech, or weakness in your arms or legs?"
+    ],
+    "dept": "Neurology",
+    "emergency_keywords": [
+      "worst headache of my life",
+      "sudden severe",
+      "can't move",
+      "can't speak",
+      "confused",
+      "loss of consciousness",
+      "seizure",
+      "paralysis",
+      "weakness in arm",
+      "weakness in leg",
+      "slurred speech",
+      "vision loss",
+      "double vision"
+    ],
+    "criticality": 4
+  },
+  "fever": {
+    "keywords": [
+      "fever",
+      "temperature",
+      "high temperature",
+      "burning up",
+      "feel hot",
+      "chills",
+      "feverish",
+      "running temperature"
+    ],
+    "questions": [
+      "What is your temperature, if you've measured it?",
+      "Are you experiencing chills or night sweats?",
+      "Do you have any difficulty breathing or a stiff neck along with the fever?"
+    ],
+    "dept": "Internal Medicine",
+    "emergency_keywords": [
+      "can't breathe",
+      "difficulty breathing",
+      "gasping",
+      "chest pain",
+      "confused",
+      "unresponsive",
+      "stiff neck with severe headache",
+      "rash that doesn't fade",
+      "bluish lips"
+    ],
+    "criticality": 7
+  },
+  "chest_pain": {
+    "keywords": [
+      "chest pain",
+      "chest hurts",
+      "pain in chest",
+      "chest discomfort",
+      "heart pain",
+      "chest pressure",
+      "tightness in chest"
+    ],
+    "questions": [
+      "Where exactly is the pain in your chest?",
+      "Does the pain spread to your arm, jaw, or back?",
+      "Are you experiencing shortness of breath or sweating along with the pain?"
+    ],
+    "dept": "Cardiology",
+    "emergency_keywords": [
+      "crushing pain",
+      "pressure",
+      "squeezing",
+      "pain in left arm",
+      "jaw pain",
+      "sweating",
+      "nausea with chest pain",
+      "shortness of breath",
+      "dizziness",
+      "lightheaded"
+    ],
+    "criticality": 10
+  },
+  "breathing_difficulty": {
+    "keywords": [
+      "breathing difficulty",
+      "shortness of breath",
+      "can't breathe",
+      "hard to breathe",
+      "difficulty breathing",
+      "breathless",
+      "out of breath",
+      "gasping",
+      "wheezing"
+    ],
+    "questions": [
+      "When did the breathing difficulty start, and did it come on suddenly?",
+      "Can you speak full sentences without pausing for breath?",
+      "Do you have any chest pain or a feeling of tightness?"
+    ],
+    "dept": "Pulmonology",
+    "emergency_keywords": [
+      "can't breathe",
+      "gasping",
+      "blue lips",
+      "severe chest pain",
+      "choking",
+      "collapsed",
+      "unresponsive"
+    ],
+    "criticality": 10
+  },
+  "stomach_pain": {
+    "keywords": [
+      "stomach pain",
+      "stomach ache",
+      "belly pain",
+      "abdominal pain",
+      "tummy hurts",
+      "stomach hurts",
+      "abdomen pain"
+    ],
+    "questions": [
+      "Where exactly is the pain in your abdomen? (upper area, lower area, right side, left side)",
+      "Does the pain stay constant, or does it come and go in waves?",
+      "Are you vomiting, and if so, is there any blood in it?"
+    ],
+    "dept": "Gastroenterology",
+    "emergency_keywords": [
+      "vomiting blood",
+      "blood in vomit",
+      "black stool",
+      "bloody stool",
+      "can't keep any fluids down",
+      "severe dehydration",
+      "rigid abdomen",
+      "unbearable pain",
+      "pregnant",
+      "fainted"
+    ],
+    "criticality": 7
+  },
+  "cough": {
+    "keywords": [
+      "cough",
+      "coughing",
+      "chest congestion",
+      "phlegm",
+      "hacking cough",
+      "dry cough",
+      "wet cough"
+    ],
+    "questions": [
+      "Are you coughing up any mucus? What color is it?",
+      "Do you have chest pain when you cough or breathe deeply?",
+      "Are you experiencing any shortness of breath, even at rest?"
+    ],
+    "dept": "Pulmonology",
+    "emergency_keywords": [
+      "coughing blood",
+      "blood in mucus",
+      "can't breathe",
+      "severe chest pain",
+      "blue lips",
+      "gasping for air",
+      "wheezing severely",
+      "choking"
+    ],
+    "criticality": 5
+  },
+  "nausea": {
+    "keywords": [
+      "nausea",
+      "nauseous",
+      "feel sick",
+      "queasy",
+      "upset stomach",
+      "want to vomit"
+    ],
+    "questions": [
+      "How long have you been feeling nauseous?",
+      "Are you able to keep fluids down?",
+      "Do you have any abdominal pain along with the nausea?"
+    ],
+    "dept": "Gastroenterology",
+    "emergency_keywords": [
+      "vomiting blood",
+      "severe dehydration",
+      "pregnant with severe pain",
+      "head injury"
+    ],
+    "criticality": 4
+  },
+  "vomiting": {
+    "keywords": [
+      "vomiting",
+      "vomit",
+      "throwing up",
+      "puking",
+      "being sick"
+    ],
+    "questions": [
+      "How many times have you vomited in the last 24 hours?",
+      "Are you able to keep any fluids down?",
+      "Is there any blood in the vomit, or does it look like coffee grounds?"
+    ],
+    "dept": "Gastroenterology",
+    "emergency_keywords": [
+      "blood in vomit",
+      "coffee grounds",
+      "can't keep fluids down",
+      "severe abdominal pain",
+      "confusion",
+      "severe headache with vomiting",
+      "pregnant",
+      "head injury"
+    ],
+    "criticality": 6
+  },
+  "diarrhea": {
+    "keywords": [
+      "diarrhea",
+      "loose stools",
+      "watery stools",
+      "frequent bowel movements",
+      "running stomach"
+    ],
+    "questions": [
+      "How many times have you had diarrhea today?",
+      "Is there any blood or mucus in the stool?",
+      "Are you experiencing any abdominal cramping or fever?"
+    ],
+    "dept": "Gastroenterology",
+    "emergency_keywords": [
+      "blood in stool",
+      "black tarry stool",
+      "severe dehydration",
+      "high fever with diarrhea",
+      "severe abdominal pain"
+    ],
+    "criticality": 5
+  },
+  "dizziness": {
+    "keywords": [
+      "dizzy",
+      "dizziness",
+      "lightheaded",
+      "vertigo",
+      "spinning",
+      "balance problems",
+      "unsteady"
+    ],
+    "questions": [
+      "Is the dizziness constant or does it come and go?",
+      "Do you feel like the room is spinning?",
+      "Have you experienced any falls or loss of consciousness?"
+    ],
+    "dept": "Neurology",
+    "emergency_keywords": [
+      "loss of consciousness",
+      "fainted",
+      "fell down",
+      "can't stand",
+      "severe headache",
+      "chest pain",
+      "slurred speech",
+      "confusion",
+      "numbness"
+    ],
+    "criticality": 6
+  },
+  "fatigue": {
+    "keywords": [
+      "fatigue",
+      "tired",
+      "exhausted",
+      "no energy",
+      "weak",
+      "lethargic",
+      "drained"
+    ],
+    "questions": [
+      "How long have you been feeling unusually tired?",
+      "Does the fatigue interfere with your daily activities?",
+      "Do you have any other symptoms like fever or weight loss?"
+    ],
+    "dept": "Internal Medicine",
+    "emergency_keywords": [
+      "chest pain with fatigue",
+      "shortness of breath",
+      "confusion",
+      "severe weakness"
+    ],
+    "criticality": 3
+  },
+  "back_pain": {
+    "keywords": [
+      "back pain",
+      "back ache",
+      "spine pain",
+      "lower back pain",
+      "upper back pain"
+    ],
+    "questions": [
+      "Where is the pain located? (upper, middle, or lower back)",
+      "Did the pain start after lifting something or an injury?",
+      "Are you experiencing any numbness or tingling in your legs?"
+    ],
+    "dept": "Orthopedics",
+    "emergency_keywords": [
+      "can't move legs",
+      "numbness in legs",
+      "loss of bladder control",
+      "loss of bowel control",
+      "severe trauma",
+      "fell from height",
+      "paralysis"
+    ],
+    "criticality": 5
+  },
+  "sore_throat": {
+    "keywords": [
+      "sore throat",
+      "throat pain",
+      "hurts to swallow",
+      "throat hurts",
+      "scratchy throat"
+    ],
+    "questions": [
+      "Do you have difficulty swallowing liquids or your own saliva?",
+      "Can you open your mouth normally?",
+      "Do you have a fever along with the sore throat?"
+    ],
+    "dept": "ENT",
+    "emergency_keywords": [
+      "can't swallow",
+      "drooling",
+      "can't open mouth",
+      "difficulty breathing",
+      "swelling in throat",
+      "muffled voice"
+    ],
+    "criticality": 4
+  },
+  "rash": {
+    "keywords": [
+      "rash",
+      "itchy skin",
+      "skin irritation",
+      "hives",
+      "bumps on skin",
+      "red spots",
+      "skin redness"
+    ],
+    "questions": [
+      "Where on your body is the rash located?",
+      "Is it itchy, painful, or does it have blisters?",
+      "Have you started any new medications recently?"
+    ],
+    "dept": "Dermatology",
+    "emergency_keywords": [
+      "difficulty breathing",
+      "swelling of face",
+      "swelling of tongue",
+      "severe allergic reaction",
+      "rash with high fever",
+      "purple spots that don't fade",
+      "blisters all over"
+    ],
+    "criticality": 4
+  },
+  "joint_pain": {
+    "keywords": [
+      "joint pain",
+      "joints hurt",
+      "knee pain",
+      "elbow pain",
+      "wrist pain",
+      "ankle pain",
+      "arthritis pain",
+      "stiff joints"
+    ],
+    "questions": [
+      "Which joint is painful?",
+      "Is there any swelling or redness around the joint?",
+      "Did the pain start after an injury or gradually over time?"
+    ],
+    "dept": "Rheumatology",
+    "emergency_keywords": [
+      "severe swelling",
+      "joint deformity",
+      "can't move joint",
+      "severe trauma"
+    ],
+    "criticality": 4
+  },
+  "muscle_pain": {
+    "keywords": [
+      "muscle pain",
+      "sore muscles",
+      "muscle ache",
+      "body aches",
+      "muscles hurt"
+    ],
+    "questions": [
+      "Which muscles are painful?",
+      "Did the pain start after exercise or physical activity?",
+      "Do you have any fever along with the muscle pain?"
+    ],
+    "dept": "General Medicine",
+    "emergency_keywords": [
+      "severe weakness",
+      "can't move limb",
+      "dark urine",
+      "very high fever"
+    ],
+    "criticality": 3
+  },
+  "anxiety": {
+    "keywords": [
+      "anxiety",
+      "anxious",
+      "panic",
+      "worried",
+      "nervous",
+      "panic attack",
+      "nervousness"
+    ],
+    "questions": [
+      "How long have you been feeling anxious?",
+      "Are you experiencing physical symptoms like rapid heartbeat or shortness of breath?",
+      "Is this affecting your daily life?"
+    ],
+    "dept": "Psychiatry",
+    "emergency_keywords": [
+      "suicidal thoughts",
+      "want to hurt myself",
+      "chest pain",
+      "can't breathe"
+    ],
+    "criticality": 5
+  },
+  "depression": {
+    "keywords": [
+      "depression",
+      "depressed",
+      "sad",
+      "hopeless",
+      "no interest",
+      "feeling down"
+    ],
+    "questions": [
+      "How long have you been feeling this way?",
+      "Are you having thoughts of harming yourself?",
+      "Is this affecting your sleep or appetite?"
+    ],
+    "dept": "Psychiatry",
+    "emergency_keywords": [
+      "suicidal",
+      "want to die",
+      "end my life",
+      "hurt myself"
+    ],
+    "criticality": 7
+  },
+  "insomnia": {
+    "keywords": [
+      "insomnia",
+      "can't sleep",
+      "trouble sleeping",
+      "sleeplessness",
+      "no sleep"
+    ],
+    "questions": [
+      "How long have you been having trouble sleeping?",
+      "Do you have difficulty falling asleep or staying asleep?",
+      "Are you experiencing any stress or anxiety?"
+    ],
+    "dept": "Internal Medicine",
+    "emergency_keywords": [],
+    "criticality": 2
+  },
+  "ear_pain": {
+    "keywords": [
+      "ear pain",
+      "earache",
+      "ear hurts",
+      "pain in ear"
+    ],
+    "questions": [
+      "Which ear is painful?",
+      "Do you have any discharge from the ear?",
+      "Have you noticed any hearing loss?"
+    ],
+    "dept": "ENT",
+    "emergency_keywords": [
+      "severe pain",
+      "discharge with blood",
+      "hearing loss suddenly",
+      "dizziness"
+    ],
+    "criticality": 4
+  },
+  "eye_pain": {
+    "keywords": [
+      "eye pain",
+      "eyes hurt",
+      "pain in eye",
+      "eye discomfort"
+    ],
+    "questions": [
+      "Which eye is affected?",
+      "Do you have any vision changes?",
+      "Is there any redness or discharge?"
+    ],
+    "dept": "Ophthalmology",
+    "emergency_keywords": [
+      "sudden vision loss",
+      "can't see",
+      "severe pain",
+      "chemical in eye",
+      "eye injury"
+    ],
+    "criticality": 7
+  },
+  "toothache": {
+    "keywords": [
+      "toothache",
+      "tooth pain",
+      "dental pain",
+      "teeth hurt"
+    ],
+    "questions": [
+      "Which tooth is painful?",
+      "Is there any swelling in your gum or face?",
+      "Do you have sensitivity to hot or cold?"
+    ],
+    "dept": "Dentistry",
+    "emergency_keywords": [
+      "severe swelling",
+      "can't swallow",
+      "difficulty breathing",
+      "face swelling"
+    ],
+    "criticality": 4
+  },
+  "bleeding": {
+    "keywords": [
+      "bleeding",
+      "blood",
+      "hemorrhage",
+      "nosebleed",
+      "bleeding gums"
+    ],
+    "questions": [
+      "Where is the bleeding from?",
+      "How long has it been bleeding?",
+      "Can you stop it with pressure?"
+    ],
+    "dept": "Emergency Medicine",
+    "emergency_keywords": [
+      "heavy bleeding",
+      "won't stop",
+      "large amount",
+      "severe trauma",
+      "head injury"
+    ],
+    "criticality": 9
+  },
+  "swelling": {
+    "keywords": [
+      "swelling",
+      "swollen",
+      "puffy",
+      "inflammation",
+      "edema"
+    ],
+    "questions": [
+      "Where is the swelling located?",
+      "Did it start suddenly or gradually?",
+      "Have you had any injury to that area?"
+    ],
+    "dept": "General Medicine",
+    "emergency_keywords": [
+      "face swelling",
+      "tongue swelling",
+      "difficulty breathing",
+      "severe pain"
+    ],
+    "criticality": 5
+  },
+  "numbness": {
+    "keywords": [
+      "numbness",
+      "numb",
+      "tingling",
+      "pins and needles",
+      "loss of sensation"
+    ],
+    "questions": [
+      "Where do you feel the numbness?",
+      "Did it start suddenly or gradually?",
+      "Are you able to move the affected area normally?"
+    ],
+    "dept": "Neurology",
+    "emergency_keywords": [
+      "sudden numbness",
+      "face numbness",
+      "arm weakness",
+      "leg weakness",
+      "slurred speech"
+    ],
+    "criticality": 8
+  },
+  "confusion": {
+    "keywords": [
+      "confusion",
+      "confused",
+      "disoriented",
+      "can't think clearly",
+      "memory problems"
+    ],
+    "questions": [
+      "When did the confusion start?",
+      "Do you know where you are and what day it is?",
+      "Have you had any head injury recently?"
+    ],
+    "dept": "Neurology",
+    "emergency_keywords": [
+      "sudden confusion",
+      "high fever",
+      "severe headache",
+      "can't recognize people",
+      "unconscious"
+    ],
+    "criticality": 10
+  },
+  "seizure": {
+    "keywords": [
+      "seizure",
+      "convulsion",
+      "fit",
+      "shaking uncontrollably"
+    ],
+    "questions": [
+      "When did the seizure occur?",
+      "How long did it last?",
+      "Have you had seizures before?"
+    ],
+    "dept": "Neurology",
+    "emergency_keywords": [
+      "seizure",
+      "convulsion",
+      "unconscious",
+      "not breathing"
+    ],
+    "criticality": 10
+  },
+  "loss_of_consciousness": {
+    "keywords": [
+      "passed out",
+      "fainted",
+      "blacked out",
+      "lost consciousness",
+      "unconscious"
+    ],
+    "questions": [
+      "How long were you unconscious?",
+      "What were you doing before you passed out?",
+      "Do you have any injuries from falling?"
+    ],
+    "dept": "Emergency Medicine",
+    "emergency_keywords": [
+      "unconscious",
+      "not responding",
+      "chest pain",
+      "head injury"
+    ],
+    "criticality": 10
+  },
+  "palpitations": {
+    "keywords": [
+      "palpitations",
+      "heart racing",
+      "rapid heartbeat",
+      "irregular heartbeat",
+      "fluttering heart"
+    ],
+    "questions": [
+      "How long have you been experiencing palpitations?",
+      "Do you have any chest pain or shortness of breath?",
+      "Have you had this before?"
+    ],
+    "dept": "Cardiology",
+    "emergency_keywords": [
+      "chest pain",
+      "shortness of breath",
+      "dizziness",
+      "fainting"
+    ],
+    "criticality": 7
+  },
+  "weight_loss": {
+    "keywords": [
+      "weight loss",
+      "losing weight",
+      "lost weight",
+      "unintentional weight loss"
+    ],
+    "questions": [
+      "How much weight have you lost?",
+      "Over what period of time?",
+      "Have you changed your diet or exercise routine?"
+    ],
+    "dept": "Internal Medicine",
+    "emergency_keywords": [
+      "severe weakness",
+      "can't eat",
+      "severe pain"
+    ],
+    "criticality": 5
+  },
+  "weight_gain": {
+    "keywords": [
+      "weight gain",
+      "gaining weight",
+      "gained weight"
+    ],
+    "questions": [
+      "How much weight have you gained?",
+      "Over what period of time?",
+      "Do you have any swelling in your legs or abdomen?"
+    ],
+    "dept": "Internal Medicine",
+    "emergency_keywords": [
+      "severe swelling",
+      "difficulty breathing"
+    ],
+    "criticality": 4
+  },
+  "urination_problems": {
+    "keywords": [
+      "urination problems",
+      "can't urinate",
+      "painful urination",
+      "burning when urinating",
+      "frequent urination",
+      "blood in urine"
+    ],
+    "questions": [
+      "What type of urination problem are you experiencing?",
+      "Is there any blood or unusual color in your urine?",
+      "Do you have any abdominal or back pain?"
+    ],
+    "dept": "Urology",
+    "emergency_keywords": [
+      "can't urinate",
+      "severe pain",
+      "blood in urine",
+      "high fever"
+    ],
+    "criticality": 6
+  },
+  "injury": {
+    "keywords": [
+      "injury",
+      "injured",
+      "hurt myself",
+      "accident",
+      "cut",
+      "wound",
+      "broken",
+      "sprain",
+      "burn",
+      "trauma"
+    ],
+    "questions": [
+      "What type of injury occurred? (fall, cut, burn, etc.)",
+      "Is there any bleeding? If yes, can you stop it with pressure?",
+      "Can you move the affected area normally?"
+    ],
+    "dept": "Emergency Medicine",
+    "emergency_keywords": [
+      "heavy bleeding",
+      "won't stop bleeding",
+      "deep cut",
+      "bone visible",
+      "can't move",
+      "deformed",
+      "unconscious",
+      "head injury",
+      "severe burn",
+      "difficulty breathing after injury"
+    ],
+    "criticality": 8
+  },
+  "burn": {
+    "keywords": [
+      "burn",
+      "burned",
+      "burnt",
+      "scalded",
+      "fire injury"
+    ],
+    "questions": [
+      "What caused the burn?",
+      "How large is the burn area?",
+      "Are there blisters or charred skin?"
+    ],
+    "dept": "Emergency Medicine",
+    "emergency_keywords": [
+      "large burn",
+      "face burn",
+      "airway burn",
+      "electrical burn",
+      "chemical burn"
+    ],
+    "criticality": 8
+  },
+  "allergic_reaction": {
+    "keywords": [
+      "allergic reaction",
+      "allergy",
+      "allergic",
+      "hives",
+      "itching all over"
+    ],
+    "questions": [
+      "What do you think triggered the reaction?",
+      "Do you have any swelling, especially of the face or throat?",
+      "Are you having any difficulty breathing?"
+    ],
+    "dept": "Allergy and Immunology",
+    "emergency_keywords": [
+      "can't breathe",
+      "throat swelling",
+      "tongue swelling",
+      "severe reaction",
+      "anaphylaxis"
+    ],
+    "criticality": 9
+  },
+  "cold_flu": {
+    "keywords": [
+      "cold",
+      "flu",
+      "runny nose",
+      "stuffy nose",
+      "congestion",
+      "sniffles"
+    ],
+    "questions": [
+      "Which symptoms are bothering you the most — runny nose, sore throat, cough, or something else?",
+      "Do you have a fever?",
+      "Are you experiencing body aches or fatigue?"
+    ],
+    "dept": "Internal Medicine",
+    "emergency_keywords": [
+      "severe difficulty breathing",
+      "very high fever",
+      "chest pain"
+    ],
+    "criticality": 2
+  },
+  "neck_pain": {
+    "keywords": [
+      "neck pain",
+      "neck ache",
+      "stiff neck",
+      "neck hurts"
+    ],
+    "questions": [
+      "Where exactly is the pain in your neck?",
+      "Did it start after an injury or suddenly?",
+      "Can you move your neck normally?"
+    ],
+    "dept": "Orthopedics",
+    "emergency_keywords": [
+      "can't move neck",
+      "severe headache with stiff neck",
+      "fever with stiff neck",
+      "trauma to neck"
+    ],
+    "criticality": 5
+  },
+  "abdominal_bloating": {
+    "keywords": [
+      "bloating",
+      "bloated",
+      "distended abdomen",
+      "swollen belly",
+      "gas"
+    ],
+    "questions": [
+      "How long have you been experiencing bloating?",
+      "Does the bloating come with pain or discomfort?",
+      "Have you noticed any changes in your bowel habits?"
+    ],
+    "dept": "Gastroenterology",
+    "emergency_keywords": [
+      "severe pain",
+      "can't pass gas",
+      "vomiting",
+      "severe distension"
+    ],
+    "criticality": 3
+  },
+  "constipation": {
+    "keywords": [
+      "constipation",
+      "constipated",
+      "can't have bowel movement",
+      "hard stools"
+    ],
+    "questions": [
+      "How long has it been since your last bowel movement?",
+      "Are you experiencing any abdominal pain?",
+      "Have you tried any remedies?"
+    ],
+    "dept": "Gastroenterology",
+    "emergency_keywords": [
+      "severe pain",
+      "vomiting",
+      "no bowel movement for many days",
+      "distended abdomen"
+    ],
+    "criticality": 4
+  },
+  "heartburn": {
+    "keywords": [
+      "heartburn",
+      "acid reflux",
+      "burning in chest",
+      "indigestion"
+    ],
+    "questions": [
+      "How often do you experience heartburn?",
+      "Does it occur after eating certain foods?",
+      "Do you have any difficulty swallowing?"
+    ],
+    "dept": "Gastroenterology",
+    "emergency_keywords": [
+      "severe chest pain",
+      "can't swallow",
+      "vomiting blood"
+    ],
+    "criticality": 3
+  },
+  "skin_discoloration": {
+    "keywords": [
+      "skin discoloration",
+      "skin color change",
+      "yellow skin",
+      "pale skin",
+      "blue skin"
+    ],
+    "questions": [
+      "Where is the skin discoloration?",
+      "When did you first notice it?",
+      "Do you have any other symptoms?"
+    ],
+    "dept": "Dermatology",
+    "emergency_keywords": [
+      "blue lips",
+      "yellow skin with pain",
+      "severe pale with weakness"
+    ],
+    "criticality": 6
+  },
+  "hair_loss": {
+    "keywords": [
+      "hair loss",
+      "losing hair",
+      "baldness",
+      "thinning hair"
+    ],
+    "questions": [
+      "How long have you been experiencing hair loss?",
+      "Does the hair loss cover your whole head, or are there specific bald patches?",
+      "Have you noticed any other symptoms like skin changes or fatigue?"
+    ],
+    "dept": "Dermatology",
+    "emergency_keywords": [],
+    "criticality": 2
+  },
+  "weakness": {
+    "keywords": [
+      "weakness",
+      "weak",
+      "no strength",
+      "limb weakness",
+      "arm weakness",
+      "leg weakness"
+    ],
+    "questions": [
+      "Where do you feel weak? (arms, legs, all over)",
+      "Did the weakness come on suddenly?",
+      "Can you move the affected area?"
+    ],
+    "dept": "Neurology",
+    "emergency_keywords": [
+      "sudden weakness",
+      "can't move",
+      "one sided weakness",
+      "slurred speech",
+      "facial droop"
+    ],
+    "criticality": 9
+  },
+  "tremor": {
+    "keywords": [
+      "tremor",
+      "shaking",
+      "trembling",
+      "hands shake"
+    ],
+    "questions": [
+      "Which part of your body is trembling?",
+      "Is it constant or does it come and go?",
+      "Does it interfere with daily activities?"
+    ],
+    "dept": "Neurology",
+    "emergency_keywords": [
+      "severe shaking",
+      "can't control body",
+      "confusion"
+    ],
+    "criticality": 5
+  },
+  "vision_problems": {
+    "keywords": [
+      "vision problems",
+      "blurry vision",
+      "can't see clearly",
+      "vision loss",
+      "double vision"
+    ],
+    "questions": [
+      "What type of vision problem are you experiencing? (blurry, double vision, loss of vision, etc.)",
+      "Did the vision problem start suddenly or come on gradually?",
+      "Which eye is affected — one eye or both?"
+    ],
+    "dept": "Ophthalmology",
+    "emergency_keywords": [
+      "sudden vision loss",
+      "complete blindness",
+      "severe eye pain",
+      "flashing lights"
+    ],
+    "criticality": 8
+  },
+  "hearing_loss": {
+    "keywords": [
+      "hearing loss",
+      "can't hear",
+      "deaf",
+      "hearing problems",
+      "ringing in ears"
+    ],
+    "questions": [
+      "Which ear has the hearing problem — one ear or both?",
+      "Did the hearing loss happen suddenly or come on gradually?",
+      "Do you have any ear pain or discharge?"
+    ],
+    "dept": "ENT",
+    "emergency_keywords": [
+      "sudden complete hearing loss",
+      "severe pain",
+      "head injury"
+    ],
+    "criticality": 6
+  },
+  "menstrual_problems": {
+    "keywords": [
+      "period problems",
+      "menstrual problems",
+      "irregular periods",
+      "heavy bleeding",
+      "missed period",
+      "painful periods"
+    ],
+    "questions": [
+      "What type of menstrual problem are you experiencing?",
+      "When was your last period?",
+      "Are you experiencing any pain?"
+    ],
+    "dept": "Gynecology",
+    "emergency_keywords": [
+      "severe bleeding",
+      "severe pain",
+      "pregnant",
+      "heavy blood loss"
+    ],
+    "criticality": 5
+  },
+  "pregnancy_concerns": {
+    "keywords": [
+      "pregnancy concerns",
+      "pregnant",
+      "pregnancy symptoms",
+      "expecting"
+    ],
+    "questions": [
+      "How far along are you in your pregnancy?",
+      "What are your concerns?",
+      "Are you experiencing any pain or bleeding?"
+    ],
+    "dept": "Obstetrics",
+    "emergency_keywords": [
+      "severe bleeding",
+      "severe abdominal pain",
+      "can't feel baby move",
+      "severe headache",
+      "vision changes"
+    ],
+    "criticality": 8
+  },
+  "sexual_health_issues": {
+    "keywords": [
+      "sexual health",
+      "std",
+      "sti",
+      "genital pain",
+      "discharge"
+    ],
+    "questions": [
+      "What symptoms are you experiencing?",
+      "How long have you had these symptoms?",
+      "Have you had any recent sexual encounters?"
+    ],
+    "dept": "Urology",
+    "emergency_keywords": [
+      "severe pain",
+      "heavy bleeding",
+      "high fever"
+    ],
+    "criticality": 5
+  }
+}
