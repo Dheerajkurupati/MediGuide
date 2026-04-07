@@ -575,7 +575,21 @@ def chat():
             "options": ["Start Over"]
         }
         if result["decision"] == "CONSULTATION":
-            response["doctors"] = bot.get_doctors_for_dept(result["dept"])
+            try:
+                dept_name = result.get("dept", "")
+                doc_res = supabase.table("doctors") \
+                    .select("name, designation") \
+                    .eq("specialization", dept_name) \
+                    .eq("is_active", True) \
+                    .limit(2) \
+                    .execute()
+                response["doctors"] = [
+                    {"name": d["name"], "specialization": d.get("designation", dept_name)}
+                    for d in (doc_res.data or [])
+                ]
+            except Exception as e:
+                print(f"[CHATBOT] Supabase doctor fetch error: {e}")
+                response["doctors"] = []
         return jsonify(response)
 
     return jsonify({"reply": "Something went wrong. Please say 'Start Over' to begin again.", "options": ["Start Over"]})

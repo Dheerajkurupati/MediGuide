@@ -115,6 +115,7 @@ const Chatbot = () => {
                 decision: data.decision || null,
                 dept:     data.dept     || null,
                 options:  data.options  || [],
+                doctors:  data.doctors  || [],
             });
         } catch (err) {
             addBotMessage(
@@ -191,6 +192,22 @@ const Chatbot = () => {
                                                 >
                                                     {opt}
                                                 </button>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {/* Doctor suggestions — CONSULTATION only */}
+                                    {msg.type === 'bot' && msg.decision === 'CONSULTATION' && msg.doctors && msg.doctors.length > 0 && (
+                                        <div className="suggested-doctors">
+                                            <p className="suggested-doctors-label">👨‍⚕️ Suggested Specialists</p>
+                                            {msg.doctors.map((doc, i) => (
+                                                <div key={i} className="doc-card">
+                                                    <div className="doc-card-avatar">🩺</div>
+                                                    <div className="doc-card-info">
+                                                        <span className="doc-card-name">{doc.name}</span>
+                                                        <span className="doc-card-spec">{doc.specialization}</span>
+                                                    </div>
+                                                </div>
                                             ))}
                                         </div>
                                     )}
