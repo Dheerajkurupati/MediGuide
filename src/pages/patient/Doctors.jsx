@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     getDoctors,
@@ -80,6 +80,25 @@ const Doctors = () => {
         };
         loadDoctors();
     }, [navigate, location]);
+
+    // ── Auto-refresh slots every 15s while modal is open ──────
+    useEffect(() => {
+        if (!showModal || !selectedDoctor || !selectedDate) return;
+        const timer = setInterval(async () => {
+            const fresh = await getAvailableSlots(selectedDoctor.id, selectedDate);
+            setSlots(fresh);
+            // If the slot the user already selected just got taken — deselect it immediately
+            if (selectedSlot) {
+                const still = fresh.find(s => s.time === selectedSlot);
+                if (!still?.available) {
+                    setSelectedSlot('');
+                    setBookingError('The slot you selected was just taken. Please choose another.');
+                }
+            }
+        }, 15000);
+        return () => clearInterval(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [showModal, selectedDoctor, selectedDate, selectedSlot]);
 
     // ── Filtered list ─────────────────────────────────────────
     const filteredDoctors = doctors.filter(d =>
@@ -411,11 +430,13 @@ const Doctors = () => {
                                                                 className={`slot-btn ${slot.isPast ? 'past' : slot.isBooked ? 'booked' : selectedSlot === slot.time ? 'selected' : 'available'}`}
                                                                 disabled={!slot.available}
                                                                 onClick={() => { setSelectedSlot(slot.time); setBookingError(''); }}
-                                                                title={slot.isPast ? 'Time passed' : slot.isBooked ? 'Already booked' : 'Available'}
+                                                                title={slot.isPast ? 'This time has already passed' : slot.isBooked ? 'Already booked — choose another slot' : 'Click to select this slot'}
                                                             >
-                                                                <span className="slot-time"><ClockIcon size={12} /> {slot.time}</span>
+                                                                <span className="slot-time">
+                                                                    <ClockIcon size={12} /> {slot.time}
+                                                                </span>
                                                                 <span className="slot-status">
-                                                                    {slot.isPast ? 'Past' : slot.isBooked ? 'Full' : 'Open'}
+                                                                    {slot.isPast ? 'Past' : slot.isBooked ? 'Booked' : 'Available'}
                                                                 </span>
                                                             </button>
                                                         ))}

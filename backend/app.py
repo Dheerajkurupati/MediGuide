@@ -21,6 +21,13 @@ import os
 
 from chatbot_engine import TriageBot
 
+# ── Indian Standard Time (IST = UTC+5:30) ─────────────────────
+IST = timezone(timedelta(hours=5, minutes=30))
+
+def get_ist_now():
+    """Returns current datetime in IST timezone."""
+    return datetime.now(IST)
+
 load_dotenv()
 
 app = Flask(__name__)
@@ -133,24 +140,33 @@ def otp_template(otp_code):
 
 
 def appointment_status_template(patient_name, doctor_name, date, time_slot, booking_id, status, doctor_note=""):
-    is_accepted = status == "accepted"
-    status_color  = "#065f46" if is_accepted else "#991b1b"
-    status_bg     = "#d1fae5" if is_accepted else "#fee2e2"
-    status_border = "#6ee7b7" if is_accepted else "#fca5a5"
-    status_text   = "✅ Confirmed" if is_accepted else "❌ Declined"
-    heading       = "Your Appointment is Confirmed!" if is_accepted else "Your Appointment was Declined"
-    message       = (
-        f"Great news!  {doctor_name} has accepted your appointment request. Please arrive 10 minutes early."
-        if is_accepted else
-        f"We're sorry,  {doctor_name} has declined your appointment request."
-    )
+    is_accepted  = status == "accepted"
+    is_cancelled = status == "cancelled"
+    is_rejected  = status == "rejected"
+
+    # Colours per status
+    if is_accepted:
+        status_color, status_bg, status_border = "#065f46", "#d1fae5", "#6ee7b7"
+        status_text = "✅ Confirmed"
+        heading     = "Your Appointment is Confirmed!"
+        message     = f"Great news! {doctor_name} has accepted your appointment request. Please arrive 10 minutes early."
+    elif is_cancelled:
+        status_color, status_bg, status_border = "#92400e", "#fef3c7", "#fde68a"
+        status_text = "⚠️ Cancelled"
+        heading     = "Your Appointment has been Cancelled"
+        message     = f"We're sorry to inform you that your appointment has been cancelled."
+    else:  # rejected
+        status_color, status_bg, status_border = "#991b1b", "#fee2e2", "#fca5a5"
+        status_text = "❌ Declined"
+        heading     = "Your Appointment was Declined"
+        message     = f"We're sorry, {doctor_name} has declined your appointment request."
 
     note_section = ""
     if doctor_note and not is_accepted:
         note_section = f"""
         <div style="background:#fef9c3;border-left:4px solid #f59e0b;border-radius:8px;
                     padding:12px 16px;margin:16px 0;color:#78350f;font-size:13px;">
-          <strong>Doctor's Note:</strong> {doctor_note}
+          <strong>Note:</strong> {doctor_note}
         </div>"""
 
     return f"""
@@ -232,7 +248,7 @@ def send_otp():
 
     # 2. Generate 6-digit OTP
     otp        = str(random.randint(100000, 999999))
-    expires_at = (datetime.now(timezone.utc) + timedelta(minutes=10)).isoformat()
+    expires_at = (get_ist_now() + timedelta(minutes=10)).isoformat()
 
     # 3. Delete any existing OTPs for this email
     supabase.table("reset_password").delete().eq("email", email).execute()
@@ -274,8 +290,8 @@ def send_status_email():
     doctor_note    = data.get("doctorNote", "")
     doctor_name    = data.get("doctorName", "")
 
-    if not appointment_id or action not in ("accepted", "rejected"):
-        return jsonify({"success": False, "message": "Invalid request."}), 400
+    if not appointment_id or action not in ("accepted", "rejected", "cancelled"):
+        return jsonify({"success": False, "message": "Invalid request. Action must be accepted, rejected, or cancelled."}), 400
 
     # 1. Fetch appointment from Supabase
     appt_res = supabase.table("appointments").select("*").eq("id", appointment_id).maybe_single().execute()
@@ -284,26 +300,35 @@ def send_status_email():
 
     appt = appt_res.data
 
-    # 2. Validate transition: only pending → accepted/rejected
-    if appt.get("status") != "pending":
+    # 2. Validate — block terminal states only
+    current_status = appt.get("status")
+    TERMINAL = ("completed", "cancelled", "rejected", "expired")
+    if current_status in TERMINAL:
         return jsonify({
             "success": False,
-            "message": f"Cannot change a '{appt.get('status')}' appointment to '{action}'."
+            "message": f"Cannot change a '{current_status}' appointment."
         }), 400
 
     # 3. Update appointment status in Supabase
-    patch = {"status": action, "updated_at": datetime.now(timezone.utc).isoformat()}
+    patch = {"status": action, "updated_at": get_ist_now().isoformat()}
     if doctor_note:
         patch["cancel_reason"] = doctor_note
+    if action == "cancelled":
+        patch["cancelled_at"] = get_ist_now().isoformat()
+        if not doctor_note:
+            patch["cancel_reason"] = "Cancelled by admin"
     supabase.table("appointments").update(patch).eq("id", appointment_id).execute()
 
-    # 4. Get patient email + name from sign_in table
-    patient_res = supabase.table("sign_in").select("name, email").eq("id", appt["user_id"]).maybe_single().execute()
-    if not patient_res.data:
-        return jsonify({"success": False, "message": "Patient not found."}), 404
+    # 4. Get patient email — use stored patient_email first, fallback to sign_in lookup
+    patient_email = appt.get("patient_email", "").strip()
+    patient_name  = appt.get("patient_name", "Patient")
 
-    patient_email = patient_res.data.get("email", "")
-    patient_name  = patient_res.data.get("name", "Patient")
+    if not patient_email:
+        patient_res = supabase.table("sign_in").select("name, email").eq("id", appt["user_id"]).maybe_single().execute()
+        if not patient_res.data:
+            return jsonify({"success": False, "message": "Patient not found."}), 404
+        patient_email = patient_res.data.get("email", "")
+        patient_name  = patient_res.data.get("name", "Patient")
 
     # 4b. Get exactly the right doctor name from DB (bulletproof fix)
     doctor_res = supabase.table("doctors").select("name").eq("id", appt.get("doctor_id")).maybe_single().execute()

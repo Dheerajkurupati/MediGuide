@@ -6,7 +6,8 @@ import {
     getAllAppointments,
     updateAppointmentStatus,
     getCurrentUser,
-    addDoctor
+    addDoctor,
+    autoExpirePendingAppointments
 } from '../../utils/supabaseDatabase';
 import './AdminDashboard.css';
 import { CrossIcon, ClipboardIcon, StethoscopeIcon, UsersIcon } from '../../components/Icons';
@@ -30,18 +31,23 @@ const AdminDashboard = () => {
     const [showAddDoctor, setShowAddDoctor] = useState(false);
     const [addingDoctor, setAddingDoctor] = useState(false);
     const [docForm, setDocForm] = useState({
-        name: '', email: '', password: '', 
+        name: '', email: '', password: '',
         specialization: 'Cardiology', designation: ''
     });
     const INITIAL_DOC_FORM = {
-        name: '', email: '', password: '', 
+        name: '', email: '', password: '',
         specialization: 'Cardiology', designation: ''
     };
+
+    // Inline cancel modal (replaces prompt())
+    const [cancelModal, setCancelModal] = useState({ open: false, id: null, newStatus: '' });
+    const [cancelReason, setCancelReason] = useState('');
 
     useEffect(() => {
         const user = getCurrentUser();
         if (!user?.isAdmin) { navigate('/admin-login'); return; }
-        loadData();
+        // Expire stale pending appointments first, then load all data
+        autoExpirePendingAppointments().then(() => loadData());
     }, [navigate]);
 
     const loadData = async () => {
@@ -55,21 +61,39 @@ const AdminDashboard = () => {
         setUsers(usrs);
     };
 
-    const handleStatusChange = async (appointmentId, newStatus) => {
-        let reason = '';
-        if (newStatus === 'cancelled') {
-            reason = prompt('Please enter a reason for cancellation:');
-            if (!reason) return;
+    // Returns allowed next-state transitions for a given current status
+    const getAllowedTransitions = (currentStatus) => {
+        switch (currentStatus) {
+            case 'pending': return ['pending', 'accepted', 'rejected', 'cancelled'];
+            case 'accepted': return ['accepted', 'completed', 'cancelled'];
+            default: return [currentStatus]; // rejected, completed, cancelled, expired → locked
         }
+    };
 
-        const result = await updateAppointmentStatus(appointmentId, newStatus, reason);
-
+    const handleStatusChange = async (appointmentId, newStatus, currentStatus) => {
+        if (newStatus === currentStatus) return;
+        if (newStatus === 'cancelled') {
+            // Open inline modal instead of prompt()
+            setCancelModal({ open: true, id: appointmentId, newStatus });
+            setCancelReason('');
+            return;
+        }
+        const result = await updateAppointmentStatus(appointmentId, newStatus, '');
         if (!result.success) {
             alert(result.message);
             return;
         }
+        const appts = await getAllAppointments();
+        setAppointments(appts);
+    };
 
-        // Reload appointments from Supabase
+    const handleConfirmAdminCancel = async () => {
+        if (!cancelReason.trim()) return;
+        const { id, newStatus } = cancelModal;
+        setCancelModal({ open: false, id: null, newStatus: '' });
+        const result = await updateAppointmentStatus(id, newStatus, cancelReason.trim());
+        if (!result.success) alert(result.message);
+        setCancelReason('');
         const appts = await getAllAppointments();
         setAppointments(appts);
     };
@@ -135,6 +159,7 @@ const AdminDashboard = () => {
         { label: 'Total Appointments', value: appointments.length, icon: '📅', color: '#2563eb' },
         { label: 'Accepted', value: appointments.filter(a => a.status === 'accepted').length, icon: '✅', color: '#16a34a' },
         { label: 'Pending', value: appointments.filter(a => a.status === 'pending').length, icon: '⏳', color: '#d97706' },
+        { label: 'Expired (No Response)', value: appointments.filter(a => a.status === 'expired').length, icon: '⏰', color: '#b45309' },
         { label: 'Registered Patients', value: users.length, icon: '👥', color: '#7c3aed' }
     ];
 
@@ -228,7 +253,7 @@ const AdminDashboard = () => {
                                 )}
                                 <select value={statusFilter} onChange={e => setStatusFilter(e.target.value)}>
                                     <option value="All">All Status</option>
-                                    {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                                    {['pending', 'accepted', 'rejected', 'completed', 'cancelled', 'expired'].map(s => <option key={s} value={s}>{s}</option>)}
                                 </select>
                             </div>
                         </>
@@ -296,15 +321,17 @@ const AdminDashboard = () => {
                                                 )}
                                             </td>
                                             <td>
-                                                {a.status === 'completed' || a.status === 'cancelled' ? (
+                                                {['completed', 'cancelled', 'rejected', 'expired'].includes(a.status) ? (
                                                     <span className="status-locked">🔒 Final</span>
                                                 ) : (
                                                     <select
                                                         className="status-select"
                                                         value={a.status}
-                                                        onChange={e => handleStatusChange(a.id, e.target.value)}
+                                                        onChange={e => handleStatusChange(a.id, e.target.value, a.status)}
                                                     >
-                                                        {STATUS_OPTIONS.map(s => <option key={s} value={s}>{s}</option>)}
+                                                        {getAllowedTransitions(a.status).map(s => (
+                                                            <option key={s} value={s}>{s}</option>
+                                                        ))}
                                                     </select>
                                                 )}
                                             </td>
@@ -333,8 +360,8 @@ const AdminDashboard = () => {
                                 />
                                 <span className="day-tag" style={{ marginLeft: 8, background: '#e0e7ff', color: '#4338ca', padding: '2px 8px', borderRadius: 12, fontSize: '0.85rem' }}>{selectedDayName}</span>
                             </div>
-                            <button 
-                                className="action-btn" 
+                            <button
+                                className="action-btn"
                                 style={{ background: '#4f46e5', color: '#fff', border: 'none', padding: '8px 16px', borderRadius: 6, cursor: 'pointer', fontWeight: 600 }}
                                 onClick={() => setShowAddDoctor(true)}
                             >
@@ -395,7 +422,6 @@ const AdminDashboard = () => {
                         <table className="data-table">
                             <thead>
                                 <tr>
-                                    <th>User ID</th>
                                     <th>Full Name</th>
                                     <th>Email</th>
                                     <th>Phone</th>
@@ -407,12 +433,11 @@ const AdminDashboard = () => {
                             </thead>
                             <tbody>
                                 {filteredUsers.length === 0 ? (
-                                    <tr><td colSpan={8} className="empty-row">No registered users found</td></tr>
+                                    <tr><td colSpan={7} className="empty-row">No registered users found</td></tr>
                                 ) : filteredUsers.map(u => {
                                     const userAppts = appointments.filter(a => a.userId === u.id);
                                     return (
                                         <tr key={u.id}>
-                                            <td><code className="booking-id">{u.id}</code></td>
                                             <td><strong>{u.name}</strong></td>
                                             <td>{u.email}</td>
                                             <td>{u.phone || '—'}</td>
@@ -459,21 +484,21 @@ const AdminDashboard = () => {
                             <form onSubmit={handleAddDoctorSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                                 <div className="form-group" style={{ marginBottom: 0 }}>
                                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Full Name</label>
-                                    <input type="text" required placeholder="John Doe" value={docForm.name} onChange={e => setDocForm({...docForm, name: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                    <input type="text" required placeholder="John Doe" value={docForm.name} onChange={e => setDocForm({ ...docForm, name: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
                                 </div>
                                 <div className="form-group" style={{ marginBottom: 0 }}>
                                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Email Address</label>
-                                    <input type="email" required placeholder="dr.john@citycare.com" value={docForm.email} onChange={e => setDocForm({...docForm, email: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                    <input type="email" required placeholder="dr.john@citycare.com" value={docForm.email} onChange={e => setDocForm({ ...docForm, email: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
                                 </div>
                                 <div className="form-group" style={{ marginBottom: 0 }}>
                                     <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Password</label>
-                                    <input type="password" required minLength={6} placeholder="Secure password" value={docForm.password} onChange={e => setDocForm({...docForm, password: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                    <input type="password" required minLength={6} placeholder="Secure password" value={docForm.password} onChange={e => setDocForm({ ...docForm, password: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
                                 </div>
-                                
+
                                 <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
                                     <div className="form-group" style={{ marginBottom: 0 }}>
                                         <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Specialization</label>
-                                        <select required value={docForm.specialization} onChange={e => setDocForm({...docForm, specialization: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', background: 'white' }}>
+                                        <select required value={docForm.specialization} onChange={e => setDocForm({ ...docForm, specialization: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px', background: 'white' }}>
                                             <option value="Cardiology">Cardiology</option>
                                             <option value="Neurology">Neurology</option>
                                             <option value="Dermatology">Dermatology</option>
@@ -486,20 +511,55 @@ const AdminDashboard = () => {
                                     </div>
                                     <div className="form-group" style={{ marginBottom: 0 }}>
                                         <label style={{ display: 'block', fontSize: '0.85rem', fontWeight: 600, color: '#475569', marginBottom: 4 }}>Designation</label>
-                                        <input type="text" required placeholder="e.g. Senior Consultant" value={docForm.designation} onChange={e => setDocForm({...docForm, designation: e.target.value})} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
+                                        <input type="text" required placeholder="e.g. Senior Consultant" value={docForm.designation} onChange={e => setDocForm({ ...docForm, designation: e.target.value })} style={{ width: '100%', padding: '10px', border: '1px solid #cbd5e1', borderRadius: '6px' }} />
                                     </div>
                                 </div>
 
-                                 {/* Qualification and Fee removed for simplicity */}
+                                {/* Qualification and Fee removed for simplicity */}
 
-                                <button 
-                                    type="submit" 
+                                <button
+                                    type="submit"
                                     disabled={addingDoctor}
                                     style={{ width: '100%', padding: '12px', background: '#2563eb', color: 'white', border: 'none', borderRadius: '8px', fontSize: '1rem', fontWeight: 600, marginTop: '1rem', cursor: addingDoctor ? 'not-allowed' : 'pointer', opacity: addingDoctor ? 0.7 : 1 }}
                                 >
                                     {addingDoctor ? 'Registering Doctor...' : 'Register Doctor'}
                                 </button>
                             </form>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ── Inline Admin Cancel Modal ── */}
+            {cancelModal.open && (
+                <div className="modal-backdrop" onClick={() => setCancelModal({ open: false, id: null, newStatus: '' })}>
+                    <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
+                        <div className="modal-header" style={{ padding: '20px 24px 0' }}>
+                            <div>
+                                <h2 style={{ fontSize: '1.1rem', color: '#1e293b', margin: 0 }}>Cancel Appointment</h2>
+                                <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: 4 }}>Enter a reason — this will be recorded and visible to the patient.</p>
+                            </div>
+                            <button className="modal-close" onClick={() => setCancelModal({ open: false, id: null, newStatus: '' })}>✕</button>
+                        </div>
+                        <div className="modal-body">
+                            <textarea
+                                rows={3}
+                                autoFocus
+                                placeholder="e.g. Doctor unavailable, emergency closure..."
+                                value={cancelReason}
+                                onChange={e => setCancelReason(e.target.value)}
+                                style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem', resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
+                            />
+                            <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
+                                <button onClick={() => setCancelModal({ open: false, id: null, newStatus: '' })}
+                                    style={{ padding: '9px 18px', border: '1px solid #cbd5e1', borderRadius: 7, background: '#fff', color: '#64748b', cursor: 'pointer', fontWeight: 500 }}>
+                                    Go Back
+                                </button>
+                                <button onClick={handleConfirmAdminCancel} disabled={!cancelReason.trim()}
+                                    style={{ padding: '9px 18px', border: 'none', borderRadius: 7, background: cancelReason.trim() ? '#dc2626' : '#fca5a5', color: '#fff', cursor: cancelReason.trim() ? 'pointer' : 'not-allowed', fontWeight: 600 }}>
+                                    Confirm Cancel
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

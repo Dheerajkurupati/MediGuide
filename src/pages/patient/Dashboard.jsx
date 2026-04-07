@@ -152,7 +152,7 @@ const Dashboard = () => {
                         <p>View and manage your bookings</p>
                     </div>
 
-                    <div className="action-card" onClick={() => document.querySelector('.chatbot-button')?.click()}>
+                    <div className="action-card" onClick={() => document.getElementById('chatbot-toggle-btn')?.click()}>
                         <div className="card-icon chat"><MessageIcon size={26} /></div>
                         <h3>Health Assistant</h3>
                         <p>Chat with our Health Assistant to understand your symptoms</p>

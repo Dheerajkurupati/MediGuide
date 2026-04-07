@@ -26,9 +26,9 @@ const Profile = () => {
             const appts = await getUserAppointments(currentUser.id);
             setStats({
                 total: appts.length,
-                confirmed: appts.filter(a => a.status === 'Confirmed').length,
-                completed: appts.filter(a => a.status === 'Completed').length,
-                cancelled: appts.filter(a => a.status === 'Cancelled').length
+                confirmed: appts.filter(a => a.status === 'accepted').length,
+                completed: appts.filter(a => a.status === 'completed').length,
+                cancelled: appts.filter(a => a.status === 'cancelled').length
             });
         };
         loadStats();

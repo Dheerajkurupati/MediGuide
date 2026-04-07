@@ -19,6 +19,22 @@ const SESSION_KEY = 'citycare_current_user';
 const SALT_ROUNDS = 10;
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
+// ─── IST Timestamp Helper ────────────────────────────────────
+// Returns the current time as an ISO string offset to IST (+05:30).
+// This ensures all timestamps saved in Supabase display as Indian Standard Time.
+const getISTTimestamp = () => {
+    const now = new Date();
+    const istOffset = 5.5 * 60 * 60 * 1000; // 5 hours 30 minutes in ms
+    const ist = new Date(now.getTime() + istOffset);
+    return ist.toISOString().replace('Z', '+05:30');
+};
+
+// Helper to format a stored timestamp for display in IST
+export const formatIST = (ts) => {
+    if (!ts) return '—';
+    return new Date(ts).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
+};
+
 // ════════════════════════════════════════════════════════════
 // SESSION HELPERS
 // ════════════════════════════════════════════════════════════
@@ -100,7 +116,8 @@ export const registerUser = async (userData) => {
         email: userData.email,
         phone: userData.phone || null,
         age: userData.age ? parseInt(userData.age, 10) : null,
-        created_at: new Date().toISOString()
+        gender: userData.gender || null,
+        created_at: getISTTimestamp()
     }]);
 
     if (profileError) {
@@ -112,7 +129,7 @@ export const registerUser = async (userData) => {
         id: sharedId,
         email: userData.email,
         password: passwordHash,
-        created_at: new Date().toISOString()
+        created_at: getISTTimestamp()
     }]);
 
     if (loginError) {
@@ -157,10 +174,10 @@ export const loginUser = async (email, password) => {
         return { success: false, message: 'Profile not found. Please contact support.' };
     }
 
-    // 4. Update last_login
+    // 4. Update last_login (stored in IST)
     await supabase
         .from('sign_in')
-        .update({ last_login: new Date().toISOString() })
+        .update({ last_login: getISTTimestamp() })
         .eq('id', loginRow.id);
 
     // 5. Store session with timestamp
@@ -170,6 +187,7 @@ export const loginUser = async (email, password) => {
         email: profile.email,
         phone: profile.phone,
         age: profile.age,
+        gender: profile.gender || '',
         role: 'patient',
         createdAt: profile.created_at,
         loginTime: Date.now()
@@ -367,7 +385,7 @@ export const getAllUsers = async () => {
 };
 
 export const updateUser = async (userId, updates) => {
-    const allowed = ['name', 'phone', 'age'];
+    const allowed = ['name', 'phone', 'age', 'gender'];  // gender is now saved
     const patch = {};
     allowed.forEach(f => { if (updates[f] !== undefined) patch[f] = updates[f]; });
 
@@ -388,6 +406,7 @@ export const updateUser = async (userId, updates) => {
         email: data.email,
         phone: data.phone,
         age: data.age,
+        gender: data.gender || '',
         role: 'patient',
         createdAt: data.created_at
     };
@@ -521,7 +540,7 @@ export const addDoctor = async (doctorData) => {
             available_days: available_days || ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday'],
             time_slots: time_slots || ['09:00 AM', '10:00 AM', '11:00 AM', '02:00 PM', '03:00 PM', '04:00 PM'],
             is_active: true,
-            created_at: new Date().toISOString()
+            created_at: getISTTimestamp()
         }]);
 
         if (docError) throw docError;
@@ -578,15 +597,38 @@ export const getAvailableSlots = async (doctorId, date) => {
     const selectedDate = new Date(date + 'T00:00:00');
     const isToday = selectedDate.toDateString() === now.toDateString();
 
-    // Slots blocked when status is 'pending' or 'accepted'
-    const { data: bookedData } = await supabase
-        .from('appointments')
-        .select('time_slot')
-        .eq('doctor_id', doctorId)
-        .eq('date', date)
-        .in('status', ['pending', 'accepted']);
+    // Try the SECURITY DEFINER RPC first (bypasses RLS so all users see booked slots).
+    // If RPC fails (e.g. schema not reloaded), fall back to direct query.
+    let bookedData = null;
+    const { data: rpcData, error: rpcError } = await supabase
+        .rpc('get_booked_slots', { p_doctor_id: doctorId, p_date: date });
 
-    const blockedSlots = (bookedData || []).map(a => a.time_slot);
+    if (rpcError) {
+        console.warn('[slots] RPC failed, using direct query (may miss other users slots):', rpcError.message);
+        const { data: fallbackData } = await supabase
+            .from('appointments')
+            .select('time_slot, status')
+            .eq('doctor_id', doctorId)
+            .eq('date', date)
+            .in('status', ['pending', 'accepted', 'completed', 'rejected']);
+        bookedData = fallbackData;
+    } else {
+        bookedData = rpcData;
+    }
+
+    const nowRef = new Date();
+    const blockedSlots = (bookedData || []).filter(a => {
+        // Block if accepted, completed, or rejected (if doctor rejected it, they are unavailable)
+        if (a.status === 'accepted' || a.status === 'completed' || a.status === 'rejected') return true; 
+        // For PENDING: only block if slot time is still in the future
+        const [timePart, meridiem] = (a.time_slot || '').split(' ');
+        if (!timePart || !meridiem) return true;
+        let [h, m] = timePart.split(':').map(Number);
+        if (meridiem === 'PM' && h !== 12) h += 12;
+        if (meridiem === 'AM' && h === 12) h = 0;
+        const slotDT = new Date(`${date}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`);
+        return slotDT > nowRef;
+    }).map(a => a.time_slot);
 
     return doctor.timeSlots.map(slot => {
         const [timePart, meridiem] = slot.split(' ');
@@ -610,6 +652,61 @@ export const getAvailableSlots = async (doctorId, date) => {
 };
 
 // ════════════════════════════════════════════════════════════
+// AUTO-EXPIRE PENDING APPOINTMENTS WHOSE TIME HAS PASSED
+// ════════════════════════════════════════════════════════════
+
+/**
+ * Marks any pending appointment whose date+time has already passed as 'expired'.
+ * Call this when Doctor Dashboard or Admin Dashboard loads.
+ * This frees up the blocked slots for re-booking.
+ */
+export const autoExpirePendingAppointments = async () => {
+    try {
+        const now = new Date();
+        const todayStr = now.toISOString().split('T')[0];
+
+        // Fetch all pending appointments for today or earlier dates
+        const { data: pending } = await supabase
+            .from('appointments')
+            .select('id, date, time_slot')
+            .eq('status', 'pending')
+            .lte('date', todayStr);
+
+        if (!pending || pending.length === 0) return { expired: 0 };
+
+        const toExpire = [];
+
+        for (const appt of pending) {
+            const [timePart, meridiem] = (appt.time_slot || '').split(' ');
+            if (!timePart || !meridiem) continue;
+            let [h, m] = timePart.split(':').map(Number);
+            if (meridiem === 'PM' && h !== 12) h += 12;
+            if (meridiem === 'AM' && h === 12) h = 0;
+            const slotDT = new Date(`${appt.date}T${String(h).padStart(2, '0')}:${String(m).padStart(2, '0')}:00`);
+            if (slotDT <= now) {
+                toExpire.push(appt.id);
+            }
+        }
+
+        if (toExpire.length > 0) {
+            await supabase
+                .from('appointments')
+                .update({
+                    status: 'expired',
+                    updated_at: getISTTimestamp(),
+                    cancel_reason: 'Appointment time passed without a doctor response.'
+                })
+                .in('id', toExpire);
+        }
+
+        return { expired: toExpire.length };
+    } catch (err) {
+        console.error('[autoExpire] Error:', err);
+        return { expired: 0 };
+    }
+};
+
+// ════════════════════════════════════════════════════════════
 // APPOINTMENTS
 // ════════════════════════════════════════════════════════════
 
@@ -618,13 +715,16 @@ const normaliseAppointment = (a) => ({
     userId: a.user_id,
     patientName: a.patient_name,
     patientPhone: a.patient_phone,
+    patientEmail: a.patient_email || '',       // ← now saved at booking time
+    patientAge: a.patient_age || null,          // ← now saved at booking time
+    patientGender: a.patient_gender || '',      // ← now saved at booking time
     doctorId: a.doctor_id,
     doctorName: a.doctor_name,
     specialization: a.specialization,
     date: a.date,
     timeSlot: a.time_slot,
     reason: a.reason,
-    status: a.status,                 // pending | accepted | rejected | completed | cancelled
+    status: a.status,   // pending | accepted | rejected | completed | cancelled | expired
     cancelReason: a.cancel_reason,
     cancelledAt: a.cancelled_at,
     createdAt: a.created_at,
@@ -673,18 +773,21 @@ export const bookAppointment = async (appointmentData) => {
     const bookingRef = await getBookingRef();
 
     const newAppointment = {
-        id: bookingRef,                          // BOOK1001
+        id: bookingRef,                               // BOOK1001
         user_id: currentUser.id,
         patient_name: currentUser.name,
         patient_phone: currentUser.phone || 'N/A',
+        patient_email: currentUser.email || '',        // ← saved for admin visibility
+        patient_age: currentUser.age || null,          // ← saved for admin visibility
+        patient_gender: appointmentData.gender || '', // ← saved for admin visibility
         doctor_id: appointmentData.doctorId,
         doctor_name: appointmentData.doctorName,
         specialization: appointmentData.specialization,
         date: appointmentData.date,
         time_slot: appointmentData.timeSlot,
         reason: appointmentData.reason,
-        status: 'pending',                       // starts as pending — doctor must accept
-        created_at: new Date().toISOString()
+        status: 'pending',                            // starts as pending — doctor must accept
+        created_at: getISTTimestamp()                 // ← IST timestamp
     };
 
     const { data, error } = await supabase
@@ -707,8 +810,8 @@ export const cancelAppointment = async (appointmentId, cancelReason) => {
         .update({
             status: 'cancelled',
             cancel_reason: cancelReason || 'No reason given',
-            cancelled_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
+            cancelled_at: getISTTimestamp(),
+            updated_at: getISTTimestamp()
         })
         .eq('id', appointmentId);
 
@@ -735,7 +838,7 @@ export const respondToAppointment = async (appointmentId, action, doctorNote = '
         }
         const { error } = await supabase
             .from('appointments')
-            .update({ status: 'completed', updated_at: new Date().toISOString() })
+            .update({ status: 'completed', updated_at: getISTTimestamp() })
             .eq('id', appointmentId);
         if (error) return { success: false, message: error.message };
         return { success: true };
@@ -757,37 +860,50 @@ export const respondToAppointment = async (appointmentId, action, doctorNote = '
 
 /**
  * Admin: Update any appointment status with rules.
+ * - completed  → Supabase directly (no email)
+ * - accepted | rejected | cancelled → Flask (DB update + patient email)
  */
 export const updateAppointmentStatus = async (appointmentId, newStatus, reason) => {
-    const { data: appt } = await supabase
-        .from('appointments')
-        .select('status')
-        .eq('id', appointmentId)
-        .single();
-
-    if (!appt) return { success: false, message: 'Appointment not found.' };
-
-    if (appt.status === 'cancelled' || appt.status === 'completed') {
-        return { success: false, message: `Cannot modify a ${appt.status} appointment.` };
+    if (!isOnline()) {
+        return { success: false, message: 'No internet connection. Please check your network.' };
     }
 
-    const patch = {
-        status: newStatus,
-        updated_at: new Date().toISOString()
-    };
-
-    if (newStatus === 'cancelled') {
-        patch.cancel_reason = reason || 'Cancelled by admin';
-        patch.cancelled_at = new Date().toISOString();
+    // completed → direct Supabase update, no email needed
+    if (newStatus === 'completed') {
+        const { data: appt } = await supabase
+            .from('appointments')
+            .select('status')
+            .eq('id', appointmentId)
+            .single();
+        if (!appt) return { success: false, message: 'Appointment not found.' };
+        if (appt.status !== 'accepted') {
+            return { success: false, message: `Cannot mark a '${appt.status}' appointment as completed.` };
+        }
+        const { error } = await supabase
+            .from('appointments')
+            .update({ status: 'completed', updated_at: getISTTimestamp() })
+            .eq('id', appointmentId);
+        if (error) return { success: false, message: error.message };
+        return { success: true };
     }
 
-    const { error } = await supabase
-        .from('appointments')
-        .update(patch)
-        .eq('id', appointmentId);
-
-    if (error) return { success: false, message: error.message };
-    return { success: true };
+    // accepted / rejected / cancelled → call Flask (updates DB + emails patient)
+    try {
+        const res = await fetch('http://localhost:5050/api/send-status-email', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                appointmentId,
+                action:     newStatus,
+                doctorNote: reason || '',
+                doctorName: 'Admin'
+            })
+        });
+        const data = await res.json();
+        return data;
+    } catch (err) {
+        return { success: false, message: getErrorMessage(err, 'Could not reach the email server. Make sure the backend is running.') };
+    }
 };
 
 // End of database operations

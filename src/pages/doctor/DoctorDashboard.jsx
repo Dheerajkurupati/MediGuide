@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { getCurrentUser, getDoctorAppointments, respondToAppointment, logoutUser } from '../../utils/supabaseDatabase';
+import { getCurrentUser, getDoctorAppointments, respondToAppointment, logoutUser, autoExpirePendingAppointments } from '../../utils/supabaseDatabase';
 import { CrossIcon, CalendarIcon, CheckCircleIcon, XCircleIcon, ClockIcon, MessageIcon, StethoscopeIcon } from '../../components/Icons';
 import './DoctorDashboard.css';
 
@@ -19,6 +19,10 @@ const DoctorDashboard = () => {
     const [view, setView] = useState('schedule'); // 'schedule' | 'all'
     const [loadingAction, setLoadingAction] = useState(null);
 
+    // Inline reject modal state (replaces prompt())
+    const [rejectModal, setRejectModal] = useState({ open: false, id: null });
+    const [rejectReason, setRejectReason] = useState('');
+
     const loadAppointments = useCallback(async () => {
         const user = getCurrentUser();
         if (!user || !user.isDoctor) { navigate('/doctor-login'); return; }
@@ -27,22 +31,46 @@ const DoctorDashboard = () => {
         setAppointments(appts);
     }, [navigate]);
 
-    useEffect(() => { loadAppointments(); }, [loadAppointments]);
+    useEffect(() => {
+        // On first load: expire stale pending appointments, then load
+        autoExpirePendingAppointments().then(() => loadAppointments());
 
+        // Poll every 60 seconds for new pending requests
+        const interval = setInterval(loadAppointments, 60000);
+        return () => clearInterval(interval);
+    }, [loadAppointments]);
+
+    // Open reject modal instead of using prompt()
     const handleAction = async (apptId, action) => {
-        let note = '';
         if (action === 'rejected') {
-            note = prompt('Please provide a reason for rejecting (patient will see this):');
-            if (!note) return;
+            setRejectModal({ open: true, id: apptId });
+            setRejectReason('');
+            return;
         }
         setLoadingAction(apptId);
-        const result = await respondToAppointment(apptId, action, note, doctor.name);
+        const result = await respondToAppointment(apptId, action, '', doctor.name);
         if (result.success) {
             await loadAppointments();
         } else {
             alert(result.message);
         }
         setLoadingAction(null);
+    };
+
+    // Confirm rejection from modal
+    const handleConfirmReject = async () => {
+        if (!rejectReason.trim()) return;
+        const id = rejectModal.id;
+        setRejectModal({ open: false, id: null });
+        setLoadingAction(id);
+        const result = await respondToAppointment(id, 'rejected', rejectReason.trim(), doctor.name);
+        if (result.success) {
+            await loadAppointments();
+        } else {
+            alert(result.message);
+        }
+        setLoadingAction(null);
+        setRejectReason('');
     };
 
     if (!doctor) return null;
@@ -57,10 +85,10 @@ const DoctorDashboard = () => {
 
     // Stats
     const stats = {
-        pending: appointments.filter(a => a.status === 'pending').length,
-        accepted: appointments.filter(a => a.status === 'accepted').length,
-        today: appointments.filter(a => a.status === 'accepted' && a.date === todayStr()).length,
-        total: appointments.length
+        pending:   appointments.filter(a => a.status === 'pending').length,
+        accepted:  appointments.filter(a => a.status === 'accepted').length,
+        today:     appointments.filter(a => a.status === 'accepted' && a.date === todayStr()).length,
+        total:     appointments.length
     };
 
     // All-appointments view (filtered by status)
@@ -204,10 +232,11 @@ const DoctorDashboard = () => {
                 {/* ══════════════════════════════════════
                     ALL APPOINTMENTS VIEW
                 ══════════════════════════════════════ */}
+                {/* ── Tab filters including expired ── */}
                 {view === 'all' && (
                     <div className="doc-main-content">
                         <div className="doc-tabs">
-                            {['pending', 'accepted', 'completed', 'rejected', 'cancelled', 'all'].map(tab => (
+                            {['pending', 'accepted', 'completed', 'rejected', 'cancelled', 'expired', 'all'].map(tab => (
                                 <button
                                     key={tab}
                                     className={`doc-tab ${statusFilter === tab ? 'active' : ''}`}
@@ -243,6 +272,36 @@ const DoctorDashboard = () => {
                     </div>
                 )}
             </div>
+
+            {/* ── Inline Reject Modal (replaces prompt()) ── */}
+            {rejectModal.open && (
+                <div className="modal-backdrop" style={{ position:'fixed', inset:0, background:'rgba(0,0,0,0.5)', zIndex:1000, display:'flex', alignItems:'center', justifyContent:'center' }}
+                     onClick={() => setRejectModal({ open: false, id: null })}>
+                    <div style={{ background:'#fff', borderRadius:12, width:400, padding:'28px 28px 24px', boxShadow:'0 8px 40px rgba(0,0,0,0.18)' }}
+                         onClick={e => e.stopPropagation()}>
+                        <h3 style={{ margin:'0 0 6px', color:'#1e293b', fontSize:'1.1rem' }}>Reject Appointment</h3>
+                        <p style={{ margin:'0 0 16px', color:'#64748b', fontSize:'0.85rem' }}>Provide a reason — the patient will see this in their email and bookings.</p>
+                        <textarea
+                            rows={3}
+                            autoFocus
+                            placeholder="e.g. Fully booked for the day, emergency schedule change..."
+                            value={rejectReason}
+                            onChange={e => setRejectReason(e.target.value)}
+                            style={{ width:'100%', padding:'10px', border:'1px solid #cbd5e1', borderRadius:8, fontSize:'0.9rem', resize:'vertical', outline:'none', boxSizing:'border-box' }}
+                        />
+                        <div style={{ display:'flex', gap:10, marginTop:16, justifyContent:'flex-end' }}>
+                            <button onClick={() => setRejectModal({ open: false, id: null })}
+                                    style={{ padding:'9px 18px', border:'1px solid #cbd5e1', borderRadius:7, background:'#fff', color:'#64748b', cursor:'pointer', fontWeight:500 }}>
+                                Cancel
+                            </button>
+                            <button onClick={handleConfirmReject} disabled={!rejectReason.trim()}
+                                    style={{ padding:'9px 18px', border:'none', borderRadius:7, background: rejectReason.trim() ? '#dc2626' : '#fca5a5', color:'#fff', cursor: rejectReason.trim() ? 'pointer' : 'not-allowed', fontWeight:600 }}>
+                                Confirm Rejection
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
