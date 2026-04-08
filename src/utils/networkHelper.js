@@ -24,8 +24,13 @@ export const isNetworkError = (error) => {
 
 // Standard error messages — call this inside any catch block
 export const getErrorMessage = (error, fallback = 'Something went wrong. Please try again.') => {
-    if (!navigator.onLine || isNetworkError(error)) {
+    // True offline: browser says no connection
+    if (!navigator.onLine) {
         return 'No internet connection. Please check your network and try again.';
+    }
+    // Online but fetch failed  → backend server is not running
+    if (isNetworkError(error)) {
+        return 'Cannot reach the CityCare server. Please make sure the backend is running (python app.py) and try again.';
     }
     if (!error) return fallback;
     const msg = (error.message || '').toLowerCase();

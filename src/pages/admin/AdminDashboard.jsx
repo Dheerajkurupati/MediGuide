@@ -39,9 +39,9 @@ const AdminDashboard = () => {
         specialization: 'Cardiology', designation: ''
     };
 
-    // Inline cancel modal (replaces prompt())
-    const [cancelModal, setCancelModal] = useState({ open: false, id: null, newStatus: '' });
-    const [cancelReason, setCancelReason] = useState('');
+    // Inline cancel/reject modal
+    const [actionModal, setActionModal]   = useState({ open: false, id: null, newStatus: '' });
+    const [actionReason, setActionReason] = useState('');
 
     useEffect(() => {
         const user = getCurrentUser();
@@ -72,10 +72,10 @@ const AdminDashboard = () => {
 
     const handleStatusChange = async (appointmentId, newStatus, currentStatus) => {
         if (newStatus === currentStatus) return;
-        if (newStatus === 'cancelled') {
-            // Open inline modal instead of prompt()
-            setCancelModal({ open: true, id: appointmentId, newStatus });
-            setCancelReason('');
+        // 'cancelled' and 'rejected' → open inline modal to collect a reason
+        if (newStatus === 'cancelled' || newStatus === 'rejected') {
+            setActionModal({ open: true, id: appointmentId, newStatus });
+            setActionReason('');
             return;
         }
         const result = await updateAppointmentStatus(appointmentId, newStatus, '');
@@ -87,13 +87,13 @@ const AdminDashboard = () => {
         setAppointments(appts);
     };
 
-    const handleConfirmAdminCancel = async () => {
-        if (!cancelReason.trim()) return;
-        const { id, newStatus } = cancelModal;
-        setCancelModal({ open: false, id: null, newStatus: '' });
-        const result = await updateAppointmentStatus(id, newStatus, cancelReason.trim());
+    const handleConfirmAction = async () => {
+        if (!actionReason.trim()) return;
+        const { id, newStatus } = actionModal;
+        setActionModal({ open: false, id: null, newStatus: '' });
+        const result = await updateAppointmentStatus(id, newStatus, actionReason.trim());
         if (!result.success) alert(result.message);
-        setCancelReason('');
+        setActionReason('');
         const appts = await getAllAppointments();
         setAppointments(appts);
     };
@@ -530,34 +530,44 @@ const AdminDashboard = () => {
                 </div>
             )}
 
-            {/* ── Inline Admin Cancel Modal ── */}
-            {cancelModal.open && (
-                <div className="modal-backdrop" onClick={() => setCancelModal({ open: false, id: null, newStatus: '' })}>
+            {/* ── Inline Admin Cancel / Reject Modal ── */}
+            {actionModal.open && (
+                <div className="modal-backdrop" onClick={() => setActionModal({ open: false, id: null, newStatus: '' })}>
                     <div className="modal" style={{ maxWidth: 420 }} onClick={e => e.stopPropagation()}>
                         <div className="modal-header" style={{ padding: '20px 24px 0' }}>
                             <div>
-                                <h2 style={{ fontSize: '1.1rem', color: '#1e293b', margin: 0 }}>Cancel Appointment</h2>
-                                <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: 4 }}>Enter a reason — this will be recorded and visible to the patient.</p>
+                                <h2 style={{ fontSize: '1.1rem', color: '#1e293b', margin: 0 }}>
+                                    {actionModal.newStatus === 'rejected' ? 'Reject Appointment' : 'Cancel Appointment'}
+                                </h2>
+                                <p style={{ fontSize: '0.85rem', color: '#64748b', marginTop: 4 }}>
+                                    {actionModal.newStatus === 'rejected'
+                                        ? 'Provide a reason — this will be shown to the patient as a Doctor\'s Note.'
+                                        : 'Enter a reason — this will be recorded and visible to the patient.'}
+                                </p>
                             </div>
-                            <button className="modal-close" onClick={() => setCancelModal({ open: false, id: null, newStatus: '' })}>✕</button>
+                            <button className="modal-close" onClick={() => setActionModal({ open: false, id: null, newStatus: '' })}>✕</button>
                         </div>
                         <div className="modal-body">
                             <textarea
                                 rows={3}
                                 autoFocus
-                                placeholder="e.g. Doctor unavailable, emergency closure..."
-                                value={cancelReason}
-                                onChange={e => setCancelReason(e.target.value)}
+                                placeholder={
+                                    actionModal.newStatus === 'rejected'
+                                        ? 'e.g. Doctor is unavailable on this date, please rebook...'
+                                        : 'e.g. Doctor unavailable, emergency closure...'
+                                }
+                                value={actionReason}
+                                onChange={e => setActionReason(e.target.value)}
                                 style={{ width: '100%', padding: '10px', borderRadius: 8, border: '1px solid #cbd5e1', fontSize: '0.9rem', resize: 'vertical', outline: 'none', boxSizing: 'border-box' }}
                             />
                             <div style={{ display: 'flex', gap: 10, marginTop: 16, justifyContent: 'flex-end' }}>
-                                <button onClick={() => setCancelModal({ open: false, id: null, newStatus: '' })}
+                                <button onClick={() => setActionModal({ open: false, id: null, newStatus: '' })}
                                     style={{ padding: '9px 18px', border: '1px solid #cbd5e1', borderRadius: 7, background: '#fff', color: '#64748b', cursor: 'pointer', fontWeight: 500 }}>
                                     Go Back
                                 </button>
-                                <button onClick={handleConfirmAdminCancel} disabled={!cancelReason.trim()}
-                                    style={{ padding: '9px 18px', border: 'none', borderRadius: 7, background: cancelReason.trim() ? '#dc2626' : '#fca5a5', color: '#fff', cursor: cancelReason.trim() ? 'pointer' : 'not-allowed', fontWeight: 600 }}>
-                                    Confirm Cancel
+                                <button onClick={handleConfirmAction} disabled={!actionReason.trim()}
+                                    style={{ padding: '9px 18px', border: 'none', borderRadius: 7, background: actionReason.trim() ? '#dc2626' : '#fca5a5', color: '#fff', cursor: actionReason.trim() ? 'pointer' : 'not-allowed', fontWeight: 600 }}>
+                                    {actionModal.newStatus === 'rejected' ? 'Confirm Reject' : 'Confirm Cancel'}
                                 </button>
                             </div>
                         </div>

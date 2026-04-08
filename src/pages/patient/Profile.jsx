@@ -88,18 +88,21 @@ const Profile = () => {
 
     return (
         <div className="profile-page">
-            <nav className="patient-nav">
-                <div className="nav-inner">
-                    <span className="nav-logo" onClick={() => navigate('/dashboard')}><CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} />CityCare</span>
-                    <div className="nav-links">
-                        <span onClick={() => navigate('/dashboard')}>Dashboard</span>
-                        <span onClick={() => navigate('/doctors')}>Doctors</span>
-                        <span onClick={() => navigate('/my-bookings')}>My Bookings</span>
-                        <span className="active">Profile</span>
+            <nav className="patient-nav-dark">
+                <div className="pnd-inner">
+                    <div className="pnd-logo" onClick={() => navigate('/dashboard')}>
+                        <span className="pnd-logo-icon"><CrossIcon size={18} color="#fff" /></span>
+                        <span>CityCare</span>
                     </div>
-                    <button className="logout-btn" onClick={() => { logoutUser(); navigate('/'); }}>
-                        Logout
-                    </button>
+                    <div className="pnd-links">
+                        <button className="pnd-link" onClick={() => navigate('/dashboard')}>Dashboard</button>
+                        <button className="pnd-link" onClick={() => navigate('/doctors')}>Doctors</button>
+                        <button className="pnd-link" onClick={() => navigate('/my-bookings')}>My Bookings</button>
+                    </div>
+                    <div className="pnd-right">
+                        <button className="pnd-link active">👤 Profile</button>
+                        <button className="pnd-logout" onClick={() => { logoutUser(); navigate('/'); }}>Logout</button>
+                    </div>
                 </div>
             </nav>
 

@@ -295,7 +295,8 @@
 
 .modal-spec {
     font-size: 0.9rem;
-    opacity: 0.85;
+    color: rgba(255, 255, 255, 0.88);
+    font-weight: 500;
 }
 
 .modal-body {
@@ -580,11 +581,139 @@
     }
 }
 
-/* ── Results count ── */
+/* ── Day Navigator ── */
+.day-navigator {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    margin-top: 1.4rem;
+}
+
+.day-nav-arrow {
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    color: #334155;
+    font-size: 1.6rem;
+    font-weight: 700;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+    transition: all 0.2s;
+    flex-shrink: 0;
+}
+
+.day-nav-arrow:hover:not(:disabled) {
+    border-color: #2563eb;
+    color: #2563eb;
+    background: #eff6ff;
+}
+
+.day-nav-arrow:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+}
+
+.day-nav-label-wrap {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    background: #fff;
+    border: 2px solid #e2e8f0;
+    border-radius: 30px;
+    padding: 0.45rem 1.1rem;
+    cursor: pointer;
+    min-width: 180px;
+    justify-content: center;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    user-select: none;
+}
+
+.day-nav-label-wrap:hover {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.08);
+}
+
+.day-nav-dayname {
+    font-size: 0.82rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+}
+
+.day-nav-label {
+    font-size: 1rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+/* Completely hidden — exists only to trigger the browser's date picker */
+.day-nav-hidden-picker {
+    position: absolute;
+    width: 0;
+    height: 0;
+    opacity: 0;
+    pointer-events: none;
+    border: none;
+    padding: 0;
+    margin: 0;
+}
+
+.day-nav-today {
+    background: #eff6ff;
+    color: #2563eb;
+    border: 1px solid #bfdbfe;
+    border-radius: 20px;
+    padding: 0.35rem 0.9rem;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.day-nav-today:hover {
+    background: #2563eb;
+    color: #fff;
+}
+
+/* ── Results count row ── */
+.results-count-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
 .results-count {
     color: #64748b;
     font-size: 0.9rem;
-    margin-bottom: 1rem;
+    margin: 0;
+}
+
+.avail-count {
+    font-size: 0.88rem;
+    font-weight: 600;
+    color: #16a34a;
+    margin: 0;
+}
+
+/* ── Dimmed card (doctor not available on selected day) ── */
+.doctor-card.card-dimmed {
+    opacity: 0.52;
+    filter: grayscale(30%);
+}
+
+.doctor-card.card-dimmed:hover {
+    opacity: 0.75;
+    filter: grayscale(0%);
 }
 
 /* ── Clear search button ── */

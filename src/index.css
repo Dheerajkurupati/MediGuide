@@ -37,3 +37,120 @@ a {
 ::-webkit-scrollbar-track { background: #f1f5f9; }
 ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+/* ─────────────────────────────────────────────────────────
+   SHARED DARK NAVBAR (used in Patient Portal: Doctors, Bookings, Profile)
+───────────────────────────────────────────────────────── */
+.patient-nav-dark {
+    background: #0f172a;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+}
+
+.pnd-inner {
+    max-width: 1280px;
+    margin: 0 auto;
+    padding: 0.85rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.pnd-logo {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-size: 1.35rem;
+    font-weight: 800;
+    color: #fff;
+    cursor: pointer;
+}
+
+.pnd-logo-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #2563eb, #7c3aed);
+    border-radius: 10px;
+    color: #fff;
+}
+
+.pnd-links {
+    display: flex;
+    gap: 0.5rem;
+    flex: 1;
+    justify-content: center;
+}
+
+.pnd-link {
+    background: none;
+    border: none;
+    padding: 0.6rem 1.25rem;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    color: #94a3b8;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.pnd-link:hover {
+    background: rgba(255, 255, 255, 0.08);
+    color: #fff;
+}
+
+.pnd-link.active {
+    background: rgba(255, 255, 255, 0.12);
+    color: #fff;
+}
+
+.pnd-right {
+    display: flex;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.pnd-logout {
+    background: #ef4444;
+    color: white;
+    border: none;
+    padding: 0.5rem 1.2rem;
+    border-radius: 20px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    font-size: 0.9rem;
+    margin-left: 0.5rem;
+}
+
+.pnd-logout:hover {
+    background: #dc2626;
+}
+
+@media (max-width: 768px) {
+    .pnd-inner {
+        flex-direction: column;
+        gap: 0.75rem;
+        padding: 0.75rem 1rem;
+    }
+    .pnd-links {
+        width: 100%;
+        overflow-x: auto;
+    }
+    .pnd-link {
+        flex: 1;
+        justify-content: center;
+        white-space: nowrap;
+    }
+    .pnd-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+}

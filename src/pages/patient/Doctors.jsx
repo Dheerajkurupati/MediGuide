@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import {
     getDoctors,
@@ -8,6 +8,7 @@ import {
     getCurrentUser
 } from '../../utils/supabaseDatabase';
 import './Doctors.css';
+import Chatbot from '../../components/Chatbot';
 import { CrossIcon, SearchIcon, StethoscopeIcon, CalendarIcon, CheckCircleIcon, RefreshIcon, XCircleIcon, ClockIcon } from '../../components/Icons';
 
 const SPEC_COLORS = {
@@ -36,6 +37,18 @@ const Doctors = () => {
     const [loadingDoctors, setLoadingDoctors] = useState(true);
     const [searchQuery, setSearchQuery] = useState('');
 
+    // ── Day navigator state ─────────────────────────────────────
+    // Build "YYYY-MM-DD" from a local Date (avoids UTC-offset issues)
+    const toLocalDate = (d) => {
+        const yy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yy}-${mm}-${dd}`;
+    };
+
+    const [selectedDay, setSelectedDay] = useState(() => toLocalDate(new Date()));
+    const dayPickerRef = useRef(null);
+
     // ── Modal / booking state ─────────────────────────────────
     const [showModal, setShowModal] = useState(false);
     const [selectedDoctor, setSelectedDoctor] = useState(null);
@@ -49,13 +62,36 @@ const Doctors = () => {
     const [bookingSuccess, setBookingSuccess] = useState(null);
     const [bookingError, setBookingError] = useState('');
 
-    // Date bounds
-    const todayStr = new Date().toISOString().split('T')[0];
+    // Date bounds (local time, not UTC)
+    const todayStr = toLocalDate(new Date());
     const maxDate = (() => {
         const d = new Date();
         d.setMonth(d.getMonth() + 3);
-        return d.toISOString().split('T')[0];
+        return toLocalDate(d);
     })();
+
+    // ── Day navigator helpers ───────────────────────────────────
+    const shiftDay = (delta) => {
+        const [y, m, d] = selectedDay.split('-').map(Number);
+        const date = new Date(y, m - 1, d + delta); // local month is 0-indexed
+        setSelectedDay(toLocalDate(date));
+    };
+
+    const getDayLabel = (dateStr) => {
+        const today = toLocalDate(new Date());
+        const yD = new Date(); yD.setDate(yD.getDate() - 1);
+        const tD = new Date(); tD.setDate(tD.getDate() + 1);
+        const yesterday = toLocalDate(yD);
+        const tomorrow  = toLocalDate(tD);
+        if (dateStr === today)     return 'Today';
+        if (dateStr === yesterday) return 'Yesterday';
+        if (dateStr === tomorrow)  return 'Tomorrow';
+        const [y, mo, d] = dateStr.split('-').map(Number);
+        return new Date(y, mo - 1, d).toLocaleDateString('en-IN', { weekday: 'short', day: 'numeric', month: 'short' });
+    };
+
+    const selectedDayName = getDayName(selectedDay);
+    const isDoctorAvailableOnDay = (doctor) => doctor.availableDays.includes(selectedDayName);
 
     // ── Load doctors ──────────────────────────────────────────
     useEffect(() => {
@@ -220,29 +256,28 @@ const Doctors = () => {
         }
     };
 
-    // ── Helper: is this doctor available today? ───────────────
-    const isDoctorAvailableToday = (doctor) => {
-        const today = getDayName(todayStr);
-        return doctor.availableDays.includes(today);
-    };
+    // kept for legacy references — now using isDoctorAvailableOnDay
+    const isDoctorAvailableToday = (doctor) => isDoctorAvailableOnDay(doctor);
 
     // ── Render ────────────────────────────────────────────────
     return (
         <div className="doctors-page">
             {/* ── Navbar ── */}
-            <nav className="patient-nav">
-                <div className="nav-inner">
-                    <span className="nav-logo" onClick={() => navigate('/dashboard')}>
-                        <CrossIcon size={18} style={{ verticalAlign: 'middle', marginRight: 6 }} />CityCare
-                    </span>
-                    <div className="nav-links">
-                        <span onClick={() => navigate('/dashboard')}>Dashboard</span>
-                        <span className="active">Doctors</span>
-                        <span onClick={() => navigate('/my-bookings')}>My Bookings</span>
+            <nav className="patient-nav-dark">
+                <div className="pnd-inner">
+                    <div className="pnd-logo" onClick={() => navigate('/dashboard')}>
+                        <span className="pnd-logo-icon"><CrossIcon size={18} color="#fff" /></span>
+                        <span>CityCare</span>
                     </div>
-                    <button className="logout-btn" onClick={() => { localStorage.removeItem('citycare_current_user'); navigate('/'); }}>
-                        Logout
-                    </button>
+                    <div className="pnd-links">
+                        <button className="pnd-link" onClick={() => navigate('/dashboard')}>Dashboard</button>
+                        <button className="pnd-link active">Doctors</button>
+                        <button className="pnd-link" onClick={() => navigate('/my-bookings')}>My Bookings</button>
+                    </div>
+                    <div className="pnd-right">
+                        <button className="pnd-link" onClick={() => navigate('/profile')}>👤 Profile</button>
+                        <button className="pnd-logout" onClick={() => { localStorage.removeItem('citycare_current_user'); navigate('/'); }}>Logout</button>
+                    </div>
                 </div>
             </nav>
 
@@ -262,7 +297,6 @@ const Doctors = () => {
                         {searchQuery && (
                             <button className="clear-search" onClick={async () => {
                                 setSearchQuery('');
-                                // If they clear the search, load all doctors if we were currently filtered by specParam
                                 if (doctors.length < 5 || doctors.every(d => d.specialization === searchQuery)) {
                                     setLoadingDoctors(true);
                                     const allDocs = await getDoctors();
@@ -270,6 +304,42 @@ const Doctors = () => {
                                     setLoadingDoctors(false);
                                 }
                             }}>✕</button>
+                        )}
+                    </div>
+
+                    {/* ── Day Navigator ── */}
+                    <div className="day-navigator">
+                        <button
+                            className="day-nav-arrow"
+                            onClick={() => shiftDay(-1)}
+                            title="Previous day"
+                        >&#8249;</button>
+
+                        <div className="day-nav-label-wrap" onClick={() => dayPickerRef.current?.showPicker?.() || dayPickerRef.current?.click()}>
+                            <span className="day-nav-dayname">{selectedDayName}</span>
+                            <span className="day-nav-label">{getDayLabel(selectedDay)}</span>
+                            <CalendarIcon size={14} color="#64748b" />
+                            <input
+                                ref={dayPickerRef}
+                                type="date"
+                                value={selectedDay}
+                                min="2024-01-01"
+                                max={maxDate}
+                                onChange={e => setSelectedDay(e.target.value)}
+                                className="day-nav-hidden-picker"
+                                tabIndex={-1}
+                            />
+                        </div>
+
+                        <button
+                            className="day-nav-arrow"
+                            onClick={() => shiftDay(1)}
+                            disabled={selectedDay >= maxDate}
+                            title="Next day"
+                        >&#8250;</button>
+
+                        {selectedDay !== todayStr && (
+                            <button className="day-nav-today" onClick={() => setSelectedDay(todayStr)}>Back to Today</button>
                         )}
                     </div>
                 </div>
@@ -302,13 +372,18 @@ const Doctors = () => {
                     </div>
                 ) : (
                     <>
-                        <p className="results-count">{filteredDoctors.length} doctor{filteredDoctors.length !== 1 ? 's' : ''} found</p>
+                        <div className="results-count-row">
+                            <p className="results-count">{filteredDoctors.length} doctor{filteredDoctors.length !== 1 ? 's' : ''} found</p>
+                            <p className="avail-count">
+                                {filteredDoctors.filter(isDoctorAvailableOnDay).length} available on {selectedDayName}
+                            </p>
+                        </div>
                         <div className="doctors-grid">
                             {filteredDoctors.map(doctor => {
                                 const color = SPEC_COLORS[doctor.specialization] || '#64748b';
-                                const availableToday = isDoctorAvailableToday(doctor);
+                                const availableOnDay = isDoctorAvailableOnDay(doctor);
                                 return (
-                                    <div className="doctor-card" key={doctor.id}>
+                                    <div className={`doctor-card ${availableOnDay ? '' : 'card-dimmed'}`} key={doctor.id}>
                                         <div className="doc-avatar" style={{ background: `${color}1a`, color }}>
                                             <StethoscopeIcon size={30} />
                                         </div>
@@ -332,8 +407,10 @@ const Doctors = () => {
                                             })}
                                         </div>
 
-                                        <div className={`today-badge ${availableToday ? 'available' : 'unavailable'}`}>
-                                            {availableToday ? '✓ Available Today' : '✗ Not Available Today'}
+                                        <div className={`today-badge ${availableOnDay ? 'available' : 'unavailable'}`}>
+                                            {availableOnDay
+                                                ? `✓ Available — ${selectedDayName}`
+                                                : `✗ Not available — ${selectedDayName}`}
                                         </div>
 
                                         <button className="book-btn" onClick={() => openModal(doctor)}>
@@ -384,7 +461,7 @@ const Doctors = () => {
                                         </div>
                                         <div>
                                             <h2>{selectedDoctor.name}</h2>
-                                            <span className="modal-spec" style={{ color: SPEC_COLORS[selectedDoctor.specialization] || '#64748b' }}>
+                                        <span className="modal-spec">
                                                 {selectedDoctor.specialization} · {selectedDoctor.designation}
                                             </span>
                                         </div>
@@ -513,6 +590,8 @@ const Doctors = () => {
                     </div>
                 </div>
             )}
+
+            <Chatbot />
         </div>
     );
 };
