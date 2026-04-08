@@ -350,6 +350,16 @@
     text-overflow: ellipsis;
 }
 
+.no-doctors-note {
+    font-size: 0.8rem;
+    color: #475569;
+    background: #f1f5f9;
+    padding: 10px 12px;
+    border-radius: 8px;
+    margin-top: 4px;
+    border-left: 3px solid #94a3b8;
+}
+
 /* ── Typing indicator ─── */
 .typing-msg { align-self: flex-start; }
 

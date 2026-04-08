@@ -14,6 +14,7 @@ const Profile = () => {
     const [message, setMessage] = useState({ text: '', type: '' });
     const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
     const [stats, setStats] = useState({ total: 0, confirmed: 0, completed: 0, cancelled: 0 });
+    const [appointments, setAppointments] = useState([]);
     const [saving, setSaving] = useState(false);
 
     useEffect(() => {
@@ -30,6 +31,7 @@ const Profile = () => {
                 completed: appts.filter(a => a.status === 'completed').length,
                 cancelled: appts.filter(a => a.status === 'cancelled').length
             });
+            setAppointments(appts);
         };
         loadStats();
     }, [navigate]);
@@ -124,6 +126,62 @@ const Profile = () => {
                     <div className="p-stat confirmed"><strong>{stats.confirmed}</strong><span>Upcoming</span></div>
                     <div className="p-stat completed"><strong>{stats.completed}</strong><span>Completed</span></div>
                     <div className="p-stat cancelled"><strong>{stats.cancelled}</strong><span>Cancelled</span></div>
+                </div>
+
+                {/* Recent Appointments Mini-Lists */}
+                <div className="profile-card appointments-card">
+                    <div className="card-header">
+                        <h2>📅 My Appointments Overview</h2>
+                        <button className="edit-btn" onClick={() => navigate('/my-bookings')}>View All</button>
+                    </div>
+                    
+                    <div className="mini-appts-grid">
+                        <div className="mini-appt-col">
+                            <h3 className="mini-col-title">Upcoming & Pending</h3>
+                            <div className="mini-appt-list">
+                                {appointments.filter(a => a.status === 'pending' || a.status === 'accepted').length === 0 ? (
+                                    <p className="no-mini-appts">No upcoming appointments.</p>
+                                ) : (
+                                    appointments
+                                        .filter(a => a.status === 'pending' || a.status === 'accepted')
+                                        .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+                                        .slice(0, 3)
+                                        .map(appt => (
+                                            <div key={appt.id} className="mini-appt-item">
+                                                <div className="mini-appt-doc">{appt.doctorName}</div>
+                                                <div className="mini-appt-meta">
+                                                    {appt.date} • {appt.timeSlot}
+                                                    <span className={`mini-status ${appt.status}`}>{appt.status}</span>
+                                                </div>
+                                            </div>
+                                        ))
+                                )}
+                            </div>
+                        </div>
+
+                        <div className="mini-appt-col">
+                            <h3 className="mini-col-title">Recent Past</h3>
+                            <div className="mini-appt-list">
+                                {appointments.filter(a => ['completed', 'cancelled', 'rejected', 'expired'].includes(a.status)).length === 0 ? (
+                                    <p className="no-mini-appts">No past appointments.</p>
+                                ) : (
+                                    appointments
+                                        .filter(a => ['completed', 'cancelled', 'rejected', 'expired'].includes(a.status))
+                                        .sort((a, b) => (b.date || '').localeCompare(a.date || ''))
+                                        .slice(0, 3)
+                                        .map(appt => (
+                                            <div key={appt.id} className="mini-appt-item">
+                                                <div className="mini-appt-doc">{appt.doctorName}</div>
+                                                <div className="mini-appt-meta">
+                                                    {appt.date} • {appt.timeSlot}
+                                                    <span className={`mini-status ${appt.status}`}>{appt.status}</span>
+                                                </div>
+                                            </div>
+                                        ))
+                                )}
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Profile Details */}

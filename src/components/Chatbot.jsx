@@ -197,26 +197,36 @@ const Chatbot = () => {
                                     )}
 
                                     {/* Doctor suggestions — CONSULTATION only */}
-                                    {msg.type === 'bot' && msg.decision === 'CONSULTATION' && msg.doctors && msg.doctors.length > 0 && (
-                                        <div className="suggested-doctors">
-                                            <p className="suggested-doctors-label">👨‍⚕️ Suggested Specialists</p>
-                                            {msg.doctors.map((doc, i) => (
-                                                <div key={i} className="doc-card">
-                                                    <div className="doc-card-avatar">🩺</div>
-                                                    <div className="doc-card-info">
-                                                        <span className="doc-card-name">{doc.name}</span>
-                                                        <span className="doc-card-spec">{doc.specialization}</span>
+                                    {msg.type === 'bot' && msg.decision === 'CONSULTATION' && (
+                                        msg.doctors && msg.doctors.length > 0 ? (
+                                            <div className="suggested-doctors">
+                                                <p className="suggested-doctors-label">👨‍⚕️ Suggested Specialists</p>
+                                                {msg.doctors.map((doc, i) => (
+                                                    <div key={i} className="doc-card">
+                                                        <div className="doc-card-avatar">🩺</div>
+                                                        <div className="doc-card-info">
+                                                            <span className="doc-card-name">{doc.name}</span>
+                                                            <span className="doc-card-spec">{doc.specialization}</span>
+                                                        </div>
                                                     </div>
-                                                </div>
-                                            ))}
-                                        </div>
+                                                ))}
+                                            </div>
+                                        ) : (
+                                            <p className="no-doctors-note">🔍 Visit our doctors page to find a specialist in <strong>{msg.dept}</strong>.</p>
+                                        )
                                     )}
 
                                     {/* Book Appointment CTA — shown after any final recommendation */}
                                     {msg.type === 'bot' && isFinalDecision(msg.decision) && (
                                         <button
                                             className="book-appt-btn"
-                                            onClick={() => { setIsOpen(false); navigate('/doctors'); }}
+                                            onClick={() => {
+                                                setIsOpen(false);
+                                                navigate(msg.decision === 'CONSULTATION' && msg.dept
+                                                    ? `/doctors?dept=${encodeURIComponent(msg.dept)}`
+                                                    : '/doctors'
+                                                );
+                                            }}
                                         >
                                             📅 Book an Appointment →
                                         </button>

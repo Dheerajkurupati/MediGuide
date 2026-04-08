@@ -176,6 +176,76 @@
 .p-stat.cancelled { border-top-color: #dc2626; }
 .p-stat.cancelled strong { color: #dc2626; }
 
+/* ── Appointments Mini-Lists ── */
+.appointments-card {
+    padding-bottom: 2.25rem !important;
+}
+
+.mini-appts-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.5rem;
+}
+
+.mini-col-title {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #475569;
+    margin: 0 0 0.85rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid #f1f5f9;
+}
+
+.mini-appt-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.mini-appt-item {
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
+    padding: 0.85rem 1rem;
+    border-radius: 12px;
+}
+
+.mini-appt-doc {
+    font-weight: 700;
+    color: #0f172a;
+    font-size: 0.95rem;
+    margin-bottom: 0.25rem;
+}
+
+.mini-appt-meta {
+    font-size: 0.8rem;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.mini-status {
+    padding: 0.15rem 0.5rem;
+    border-radius: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: capitalize;
+}
+
+.mini-status.pending { background: #fef3c7; color: #92400e; }
+.mini-status.accepted { background: #d1fae5; color: #065f46; }
+.mini-status.completed { background: #dbeafe; color: #1e40af; }
+.mini-status.cancelled { background: #f1f5f9; color: #475569; }
+.mini-status.rejected { background: #fee2e2; color: #991b1b; }
+.mini-status.expired { background: #fef3c7; color: #92400e; }
+
+.no-mini-appts {
+    color: #94a3b8;
+    font-size: 0.85rem;
+    font-style: italic;
+    margin: 0;
+}
+
 /* ── Cards ── */
 .profile-card {
     background: #fff;

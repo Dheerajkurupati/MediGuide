@@ -66,9 +66,14 @@ const Doctors = () => {
         if (user.gender) setGender(user.gender);
 
         const params = new URLSearchParams(location.search);
-        const specParam = params.get('specialization');
+        const specParam = params.get('specialization') || params.get('dept');
         const searchParam = params.get('search');
-        if (searchParam) setSearchQuery(searchParam);
+        
+        if (searchParam) {
+            setSearchQuery(searchParam);
+        } else if (specParam) {
+            setSearchQuery(specParam);
+        }
 
         const loadDoctors = async () => {
             setLoadingDoctors(true);
@@ -255,7 +260,16 @@ const Doctors = () => {
                             onChange={e => setSearchQuery(e.target.value)}
                         />
                         {searchQuery && (
-                            <button className="clear-search" onClick={() => setSearchQuery('')}>✕</button>
+                            <button className="clear-search" onClick={async () => {
+                                setSearchQuery('');
+                                // If they clear the search, load all doctors if we were currently filtered by specParam
+                                if (doctors.length < 5 || doctors.every(d => d.specialization === searchQuery)) {
+                                    setLoadingDoctors(true);
+                                    const allDocs = await getDoctors();
+                                    setDoctors(allDocs);
+                                    setLoadingDoctors(false);
+                                }
+                            }}>✕</button>
                         )}
                     </div>
                 </div>
@@ -278,7 +292,13 @@ const Doctors = () => {
                         <SearchIcon size={40} color="#94a3b8" />
                         <h3>{searchQuery ? `No results for "${searchQuery}"` : 'No doctors found'}</h3>
                         <p>Try a different search term or specialization.</p>
-                        {searchQuery && <button onClick={() => setSearchQuery('')}>Clear Search</button>}
+                        {searchQuery && <button onClick={async () => {
+                            setSearchQuery('');
+                            setLoadingDoctors(true);
+                            const allDocs = await getDoctors();
+                            setDoctors(allDocs);
+                            setLoadingDoctors(false);
+                        }}>Clear Search</button>}
                     </div>
                 ) : (
                     <>
