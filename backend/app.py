@@ -596,6 +596,38 @@ def chat():
 
 
 # ═══════════════════════════════════════════════════════════════
+# ROUTE 4 — SUPPORT FORM
+# ═══════════════════════════════════════════════════════════════
+
+@app.route("/api/support", methods=["POST"])
+def submit_support():
+    data = request.json or {}
+    name = data.get("name", "").strip()
+    email = data.get("email", "").strip()
+    message = data.get("message", "").strip()
+
+    if not name or not email or not message:
+        return jsonify({"success": False, "message": "Please provide name, email, and message."}), 400
+
+    subject = f"Support Request from {name}"
+    html_body = f"""
+    <h3>New Support Request</h3>
+    <p><strong>Name:</strong> {name}</p>
+    <p><strong>Email:</strong> {email}</p>
+    <p><strong>Message:</strong></p>
+    <p>{message.replace(chr(10), '<br>')}</p>
+    """
+
+    to_email = "support.citycare@gmail.com"
+    sent = send_email(to_email=to_email, subject=subject, html_body=html_body)
+
+    if sent:
+        return jsonify({"success": True, "message": "Support request sent successfully!"})
+    else:
+        return jsonify({"success": False, "message": "Failed to send support request. Please try again later."}), 500
+
+
+# ═══════════════════════════════════════════════════════════════
 # HEALTH CHECK
 # ═══════════════════════════════════════════════════════════════
 

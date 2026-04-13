@@ -7,7 +7,14 @@ import './DoctorDashboard.css';
 const DAYS_FULL = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
 const DAYS_SHORT = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 
-const todayStr = () => new Date().toISOString().split('T')[0];
+// Build "YYYY-MM-DD" from local time (avoids UTC offset problems in IST)
+const localDateStr = (d = new Date()) => {
+    const yy = d.getFullYear();
+    const mm = String(d.getMonth() + 1).padStart(2, '0');
+    const dd = String(d.getDate()).padStart(2, '0');
+    return `${yy}-${mm}-${dd}`;
+};
+const todayStr = () => localDateStr();
 const getDayName = (dateStr) => DAYS_FULL[new Date(dateStr + 'T00:00').getDay()];
 
 const DoctorDashboard = () => {
@@ -47,12 +54,17 @@ const DoctorDashboard = () => {
             setRejectReason('');
             return;
         }
+
+        // ── Optimistic update: change status in UI immediately ──
+        setAppointments(prev => prev.map(a => a.id === apptId ? { ...a, status: action } : a));
         setLoadingAction(apptId);
+
+        // Fire API in background (sends email + persists to DB)
         const result = await respondToAppointment(apptId, action, '', doctor.name);
-        if (result.success) {
-            await loadAppointments();
-        } else {
+        if (!result.success) {
+            // Rollback: restore real data from DB on failure
             alert(result.message);
+            await loadAppointments();
         }
         setLoadingAction(null);
     };
@@ -61,16 +73,20 @@ const DoctorDashboard = () => {
     const handleConfirmReject = async () => {
         if (!rejectReason.trim()) return;
         const id = rejectModal.id;
+        const reason = rejectReason.trim();
         setRejectModal({ open: false, id: null });
+        setRejectReason('');
+
+        // ── Optimistic update ──
+        setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'rejected' } : a));
         setLoadingAction(id);
-        const result = await respondToAppointment(id, 'rejected', rejectReason.trim(), doctor.name);
-        if (result.success) {
-            await loadAppointments();
-        } else {
+
+        const result = await respondToAppointment(id, 'rejected', reason, doctor.name);
+        if (!result.success) {
             alert(result.message);
+            await loadAppointments(); // rollback
         }
         setLoadingAction(null);
-        setRejectReason('');
     };
 
     if (!doctor) return null;

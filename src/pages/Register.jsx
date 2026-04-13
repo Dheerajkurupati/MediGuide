@@ -15,6 +15,7 @@ const Register = () => {
         confirmPassword: ''
     });
     const [error, setError] = useState('');
+    const [success, setSuccess] = useState('');
     const [loading, setLoading] = useState(false);
 
     const handleSubmit = async (e) => {
@@ -42,8 +43,8 @@ const Register = () => {
         setLoading(false);
 
         if (result.success) {
-            alert('Registration successful! Please login.');
-            navigate('/login');
+            setSuccess('✅ Registration successful! Redirecting to login...');
+            setTimeout(() => navigate('/login'), 2000);
         } else {
             setError(result.message);
         }
@@ -60,7 +61,8 @@ const Register = () => {
                 </div>
 
                 <form className="auth-form" onSubmit={handleSubmit}>
-                    {error && <div className="error-message">{error}</div>}
+                    {error   && <div className="error-message">{error}</div>}
+                    {success && <div className="success-banner">{success}</div>}
 
                     <div className="form-group">
                         <label>Full Name</label>

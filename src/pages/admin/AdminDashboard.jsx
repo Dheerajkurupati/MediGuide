@@ -7,7 +7,8 @@ import {
     updateAppointmentStatus,
     getCurrentUser,
     addDoctor,
-    autoExpirePendingAppointments
+    autoExpirePendingAppointments,
+    deleteAppointment
 } from '../../utils/supabaseDatabase';
 import './AdminDashboard.css';
 import { CrossIcon, ClipboardIcon, StethoscopeIcon, UsersIcon } from '../../components/Icons';
@@ -25,7 +26,14 @@ const AdminDashboard = () => {
     const [selectedDoctor, setSelectedDoctor] = useState(null);
     const [statusFilter, setStatusFilter] = useState('All');
     const [dateFilter, setDateFilter] = useState('');
-    const [doctorDate, setDoctorDate] = useState(new Date().toISOString().split('T')[0]);
+    // Local date helper (avoids UTC offset issues in IST)
+    const localDateStr = (d = new Date()) => {
+        const yy = d.getFullYear();
+        const mm = String(d.getMonth() + 1).padStart(2, '0');
+        const dd = String(d.getDate()).padStart(2, '0');
+        return `${yy}-${mm}-${dd}`;
+    };
+    const [doctorDate, setDoctorDate] = useState(localDateStr());
 
     // Add Doctor Form State
     const [showAddDoctor, setShowAddDoctor] = useState(false);
@@ -42,6 +50,16 @@ const AdminDashboard = () => {
     // Inline cancel/reject modal
     const [actionModal, setActionModal]   = useState({ open: false, id: null, newStatus: '' });
     const [actionReason, setActionReason] = useState('');
+
+    // Delete state
+    const [deletingId, setDeletingId] = useState(null);
+
+    // In-page toast (replaces all alert())
+    const [toast, setToast] = useState({ text: '', type: '' });
+    const showToast = (text, type = 'success') => {
+        setToast({ text, type });
+        setTimeout(() => setToast({ text: '', type: '' }), 3500);
+    };
 
     useEffect(() => {
         const user = getCurrentUser();
@@ -80,7 +98,7 @@ const AdminDashboard = () => {
         }
         const result = await updateAppointmentStatus(appointmentId, newStatus, '');
         if (!result.success) {
-            alert(result.message);
+            showToast(result.message, 'error');
             return;
         }
         const appts = await getAllAppointments();
@@ -92,10 +110,26 @@ const AdminDashboard = () => {
         const { id, newStatus } = actionModal;
         setActionModal({ open: false, id: null, newStatus: '' });
         const result = await updateAppointmentStatus(id, newStatus, actionReason.trim());
-        if (!result.success) alert(result.message);
+        if (!result.success) showToast(result.message, 'error');
         setActionReason('');
         const appts = await getAllAppointments();
         setAppointments(appts);
+    };
+
+    const handleDeleteAppointment = async (appointmentId, currentStatus) => {
+        if (deletingId === appointmentId) {
+            // Second click = confirmed
+            const result = await deleteAppointment(appointmentId, currentStatus);
+            if (!result.success) { showToast(result.message, 'error'); }
+            setDeletingId(null);
+            const appts = await getAllAppointments();
+            setAppointments(appts);
+        } else {
+            // First click = arm for confirmation
+            setDeletingId(appointmentId);
+            // Auto-disarm after 4 seconds
+            setTimeout(() => setDeletingId(id => id === appointmentId ? null : id), 4000);
+        }
     };
 
     const handleAddDoctorSubmit = async (e) => {
@@ -110,12 +144,12 @@ const AdminDashboard = () => {
         setAddingDoctor(false);
 
         if (result.success) {
-            alert(`Doctor added! Doctor ID: ${result.doctorId}`);
+            showToast(`✅ Doctor registered! ID: ${result.doctorId}`);
             setShowAddDoctor(false);
             setDocForm(INITIAL_DOC_FORM);
             setDoctors(await getDoctors());
         } else {
-            alert(`Error: ${result.message}`);
+            showToast(`Error: ${result.message}`, 'error');
         }
     };
 
@@ -180,6 +214,21 @@ const AdminDashboard = () => {
 
             <div className="admin-container">
                 <h1 className="admin-title">Hospital Staff Dashboard</h1>
+
+                {/* ── In-page Toast ── */}
+                {toast.text && (
+                    <div style={{
+                        position: 'fixed', top: 24, right: 24, zIndex: 9999,
+                        background: toast.type === 'error' ? '#dc2626' : '#16a34a',
+                        color: '#fff', padding: '14px 22px', borderRadius: 12,
+                        fontWeight: 600, fontSize: '0.95rem',
+                        boxShadow: '0 4px 20px rgba(0,0,0,0.18)',
+                        display: 'flex', alignItems: 'center', gap: 10,
+                        animation: 'slideIn 0.3s ease'
+                    }}>
+                        {toast.type === 'error' ? '❌' : '✅'} {toast.text}
+                    </div>
+                )}
 
                 {/* ── Stats Cards ── */}
                 <div className="stats-row">
@@ -322,7 +371,27 @@ const AdminDashboard = () => {
                                             </td>
                                             <td>
                                                 {['completed', 'cancelled', 'rejected', 'expired'].includes(a.status) ? (
-                                                    <span className="status-locked">🔒 Final</span>
+                                                    <div style={{ display: 'flex', gap: 6, alignItems: 'center', flexWrap: 'wrap' }}>
+                                                        <span className="status-locked">🔒 Final</span>
+                                                        <button
+                                                            onClick={() => handleDeleteAppointment(a.id, a.status)}
+                                                            title={deletingId === a.id ? 'Click again to confirm delete' : 'Delete this appointment'}
+                                                            style={{
+                                                                padding: '4px 8px',
+                                                                borderRadius: 6,
+                                                                border: 'none',
+                                                                background: deletingId === a.id ? '#dc2626' : '#fee2e2',
+                                                                color: deletingId === a.id ? '#fff' : '#dc2626',
+                                                                cursor: 'pointer',
+                                                                fontSize: '0.78rem',
+                                                                fontWeight: 600,
+                                                                transition: 'all 0.2s',
+                                                                whiteSpace: 'nowrap'
+                                                            }}
+                                                        >
+                                                            {deletingId === a.id ? '⚠️ Confirm?' : '🗑️ Delete'}
+                                                        </button>
+                                                    </div>
                                                 ) : (
                                                     <select
                                                         className="status-select"

@@ -25,9 +25,12 @@ const Profile = () => {
 
         const loadStats = async () => {
             const appts = await getUserAppointments(currentUser.id);
+            const _n = new Date();
+            const todayStr = `${_n.getFullYear()}-${String(_n.getMonth()+1).padStart(2,'0')}-${String(_n.getDate()).padStart(2,'0')}`;
             setStats({
                 total: appts.length,
-                confirmed: appts.filter(a => a.status === 'accepted').length,
+                // Only count accepted appointments that are today or in the future
+                confirmed: appts.filter(a => a.status === 'accepted' && a.date >= todayStr).length,
                 completed: appts.filter(a => a.status === 'completed').length,
                 cancelled: appts.filter(a => a.status === 'cancelled').length
             });
@@ -137,28 +140,35 @@ const Profile = () => {
                         <h2>📅 My Appointments Overview</h2>
                         <button className="edit-btn" onClick={() => navigate('/my-bookings')}>View All</button>
                     </div>
-                    
+
                     <div className="mini-appts-grid">
                         <div className="mini-appt-col">
                             <h3 className="mini-col-title">Upcoming & Pending</h3>
                             <div className="mini-appt-list">
-                                {appointments.filter(a => a.status === 'pending' || a.status === 'accepted').length === 0 ? (
-                                    <p className="no-mini-appts">No upcoming appointments.</p>
-                                ) : (
-                                    appointments
-                                        .filter(a => a.status === 'pending' || a.status === 'accepted')
-                                        .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
-                                        .slice(0, 3)
-                                        .map(appt => (
-                                            <div key={appt.id} className="mini-appt-item">
-                                                <div className="mini-appt-doc">{appt.doctorName}</div>
-                                                <div className="mini-appt-meta">
-                                                    {appt.date} • {appt.timeSlot}
-                                                    <span className={`mini-status ${appt.status}`}>{appt.status}</span>
+                                {(() => {
+                                    const _n = new Date();
+                                    const todayStr = `${_n.getFullYear()}-${String(_n.getMonth()+1).padStart(2,'0')}-${String(_n.getDate()).padStart(2,'0')}`;
+                                    const upcomingPending = appointments.filter(a =>
+                                        a.status === 'pending' ||
+                                        (a.status === 'accepted' && a.date >= todayStr)
+                                    );
+                                    return upcomingPending.length === 0 ? (
+                                        <p className="no-mini-appts">No upcoming appointments.</p>
+                                    ) : (
+                                        upcomingPending
+                                            .sort((a, b) => (a.date || '').localeCompare(b.date || ''))
+                                            .slice(0, 3)
+                                            .map(appt => (
+                                                <div key={appt.id} className="mini-appt-item">
+                                                    <div className="mini-appt-doc">{appt.doctorName}</div>
+                                                    <div className="mini-appt-meta">
+                                                        {appt.date} • {appt.timeSlot}
+                                                        <span className={`mini-status ${appt.status}`}>{appt.status}</span>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))
-                                )}
+                                            ))
+                                    );
+                                })()}
                             </div>
                         </div>
 

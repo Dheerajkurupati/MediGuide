@@ -663,7 +663,10 @@ export const getAvailableSlots = async (doctorId, date) => {
 export const autoExpirePendingAppointments = async () => {
     try {
         const now = new Date();
-        const todayStr = now.toISOString().split('T')[0];
+        // Build date string from local time (not UTC) to avoid IST offset issues
+        const localDD = String(now.getDate()).padStart(2, '0');
+        const localMM = String(now.getMonth() + 1).padStart(2, '0');
+        const todayStr = `${now.getFullYear()}-${localMM}-${localDD}`;
 
         // Fetch all pending appointments for today or earlier dates
         const { data: pending } = await supabase
@@ -904,6 +907,23 @@ export const updateAppointmentStatus = async (appointmentId, newStatus, reason) 
     } catch (err) {
         return { success: false, message: getErrorMessage(err, 'Could not reach the email server. Make sure the backend is running.') };
     }
+};
+
+/**
+ * Admin-only: Permanently delete an appointment from the database.
+ * Only allowed for final statuses: completed, rejected, cancelled, expired.
+ */
+export const deleteAppointment = async (appointmentId, currentStatus) => {
+    const FINAL_STATUSES = ['completed', 'rejected', 'cancelled', 'expired'];
+    if (!FINAL_STATUSES.includes(currentStatus)) {
+        return { success: false, message: `Cannot delete an active '${currentStatus}' appointment. Change its status first.` };
+    }
+    const { error } = await supabase
+        .from('appointments')
+        .delete()
+        .eq('id', appointmentId);
+    if (error) return { success: false, message: error.message };
+    return { success: true };
 };
 
 // End of database operations

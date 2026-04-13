@@ -7,15 +7,35 @@ const LandingPage = () => {
     const navigate = useNavigate();
     const [supportForm, setSupportForm] = useState({ name: '', email: '', message: '' });
 
+    const [isSubmitting, setIsSubmitting] = useState(false);
+    const [submitMessage, setSubmitMessage] = useState(null);
+
     const handleSupportChange = (e) => {
         setSupportForm({ ...supportForm, [e.target.name]: e.target.value });
     };
 
-    const handleSupportSubmit = (e) => {
+    const handleSupportSubmit = async (e) => {
         e.preventDefault();
-        const subject = `Support Request from ${supportForm.name}`;
-        const body = `Name: ${supportForm.name}%0AEmail: ${supportForm.email}%0A%0AMessage:%0A${encodeURIComponent(supportForm.message)}`;
-        window.location.href = `mailto:support@mediguide.com?subject=${encodeURIComponent(subject)}&body=${body}`;
+        setIsSubmitting(true);
+        setSubmitMessage(null);
+        try {
+            const res = await fetch('http://localhost:5050/api/support', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(supportForm)
+            });
+            const data = await res.json();
+            if (data.success) {
+                setSubmitMessage({ type: 'success', text: data.message });
+                setSupportForm({ name: '', email: '', message: '' });
+            } else {
+                setSubmitMessage({ type: 'error', text: data.message || 'Failed to send message.' });
+            }
+        } catch (err) {
+            setSubmitMessage({ type: 'error', text: 'Server error. Please try again later.' });
+        } finally {
+            setIsSubmitting(false);
+        }
     };
 
     return (
@@ -57,7 +77,7 @@ const LandingPage = () => {
                         </button>
                     </div>
                     <div className="hero-stats">
-                        <div className="stat"><strong>8+</strong><span>Specialists</span></div>
+                        <div className="stat"><strong>30+</strong><span>Specialists</span></div>
                         <div className="stat-divider" />
                         <div className="stat"><strong>7 Days</strong><span>Available</span></div>
                         <div className="stat-divider" />
@@ -182,8 +202,18 @@ const LandingPage = () => {
                             required
                         />
                     </div>
-                    <button type="submit" className="support-submit-btn">
-                        ✉️ Send to Support
+                    {submitMessage && (
+                        <div className={`form-message ${submitMessage.type}`} style={{
+                            padding: '10px', marginTop: '10px', borderRadius: '4px',
+                            backgroundColor: submitMessage.type === 'success' ? '#dcfce7' : '#fee2e2',
+                            color: submitMessage.type === 'success' ? '#166534' : '#991b1b',
+                            fontSize: '0.9rem', textAlign: 'center'
+                        }}>
+                            {submitMessage.text}
+                        </div>
+                    )}
+                    <button type="submit" className="support-submit-btn" disabled={isSubmitting}>
+                        {isSubmitting ? 'Sending...' : '✉️ Send to Support'}
                     </button>
                 </form>
             </section>
@@ -206,8 +236,8 @@ const LandingPage = () => {
                         <div className="contact-icon-box">📞</div>
                         <div>
                             <strong>Phone</strong>
-                            <p><a href="tel:+919876543210" className="contact-link">+91 98765 43210</a></p>
-                            <p><a href="tel:+914012345678" className="contact-link">+91 40-1234 5678</a></p>
+                            <p><a href="tel:+919876543210" className="contact-link">+91 90146 36588</a></p>
+                            <p><a href="tel:+914012345678" className="contact-link">+91 75690 23221</a></p>
                         </div>
                     </div>
 
@@ -215,8 +245,7 @@ const LandingPage = () => {
                         <div className="contact-icon-box">✉️</div>
                         <div>
                             <strong>Email</strong>
-                            <p><a href="mailto:info@mediguide.com" className="contact-link">info@mediguide.com</a></p>
-                            <p><a href="mailto:appointments@mediguide.com" className="contact-link">appointments@mediguide.com</a></p>
+                            <p><a href="mailto:support.citycare@gmail.com" className="contact-link">support.citycare@gmail.com</a></p>
                         </div>
                     </div>
                 </div>
