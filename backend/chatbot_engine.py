@@ -35,7 +35,7 @@ class TriageBot:
         # Initialize ML classifier
         self.ml_classifier = MLClassifier()
         
-        print("✅ MediGuide initialized with NLP and ML capabilities!")
+        print("MediGuide initialized with NLP and ML capabilities!")
     
     def detect_greeting(self, text):
         """Detect if user input is a greeting"""
