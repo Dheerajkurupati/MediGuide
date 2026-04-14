@@ -2,7 +2,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import './Chatbot.css';
 
-const FLASK_URL = 'http://localhost:5050';
+const FLASK_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5050';
 
 // ── Markdown-lite renderer ──────────────────────────────────────
 // Handles **bold**, *italic*, bullet lines starting with • / - / *

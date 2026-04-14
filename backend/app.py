@@ -31,7 +31,12 @@ def get_ist_now():
 load_dotenv()
 
 app = Flask(__name__)
-CORS(app, origins=["http://localhost:5173", "http://localhost:4173"])
+# Allow CORS from local environments or dynamic deployment URLs
+FRONTEND_URL = os.getenv("FRONTEND_URL", "*")
+if FRONTEND_URL == "*":
+    CORS(app)
+else:
+    CORS(app, origins=[FRONTEND_URL, "http://localhost:5173", "http://localhost:4173"])
 
 FLASK_PORT = 5050
 
@@ -637,5 +642,6 @@ def health():
 
 
 if __name__ == "__main__":
-    print(f"Starting {HOSPITAL_NAME} Email Backend on port {FLASK_PORT}...")
-    app.run(debug=True, port=FLASK_PORT)
+    port = int(os.environ.get("PORT", FLASK_PORT))
+    print(f"Starting {HOSPITAL_NAME} Email Backend on port {port}...")
+    app.run(host="0.0.0.0", port=port, debug=True)

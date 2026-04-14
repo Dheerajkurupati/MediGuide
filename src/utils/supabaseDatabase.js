@@ -16,6 +16,7 @@ import bcrypt from 'bcryptjs';
 import { isOnline, isNetworkError, getErrorMessage } from './networkHelper';
 
 const SESSION_KEY = 'citycare_current_user';
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5050';
 const SALT_ROUNDS = 10;
 const SESSION_TTL_MS = 7 * 24 * 60 * 60 * 1000; // 7 days
 
@@ -306,7 +307,7 @@ export const sendOTP = async (email) => {
         return { success: false, message: 'No internet connection. Please check your network and try again.' };
     }
     try {
-        const res = await fetch('http://localhost:5050/api/send-otp', {
+        const res = await fetch(`${BACKEND_URL}/api/send-otp`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ email })
@@ -849,7 +850,7 @@ export const respondToAppointment = async (appointmentId, action, doctorNote = '
 
     // 'accepted' or 'rejected' → call Flask (DB update + email patient + log)
     try {
-        const res = await fetch('http://localhost:5050/api/send-status-email', {
+        const res = await fetch(`${BACKEND_URL}/api/send-status-email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({ appointmentId, action, doctorNote, doctorName })
@@ -892,7 +893,7 @@ export const updateAppointmentStatus = async (appointmentId, newStatus, reason) 
 
     // accepted / rejected / cancelled → call Flask (updates DB + emails patient)
     try {
-        const res = await fetch('http://localhost:5050/api/send-status-email', {
+        const res = await fetch(`${BACKEND_URL}/api/send-status-email`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify({
