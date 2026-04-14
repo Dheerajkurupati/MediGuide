@@ -99,10 +99,10 @@ const AdminDashboard = () => {
         const result = await updateAppointmentStatus(appointmentId, newStatus, '');
         if (!result.success) {
             showToast(result.message, 'error');
-            return;
+        } else {
+            setAppointments(prev => prev.map(a => a.id === appointmentId ? { ...a, status: newStatus } : a));
+            showToast(`Appointment status updated to ${newStatus}`);
         }
-        const appts = await getAllAppointments();
-        setAppointments(appts);
     };
 
     const handleConfirmAction = async () => {
@@ -110,10 +110,13 @@ const AdminDashboard = () => {
         const { id, newStatus } = actionModal;
         setActionModal({ open: false, id: null, newStatus: '' });
         const result = await updateAppointmentStatus(id, newStatus, actionReason.trim());
-        if (!result.success) showToast(result.message, 'error');
+        if (!result.success) {
+            showToast(result.message, 'error');
+        } else {
+            setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: newStatus, cancelReason: actionReason.trim() } : a));
+            showToast(`Appointment ${newStatus} successfully!`);
+        }
         setActionReason('');
-        const appts = await getAllAppointments();
-        setAppointments(appts);
     };
 
     const handleDeleteAppointment = async (appointmentId, currentStatus) => {

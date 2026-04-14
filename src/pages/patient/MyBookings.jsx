@@ -53,10 +53,14 @@ const MyBookings = () => {
     // ── Confirm cancel (from modal) ────────────────────────────
     const handleConfirmCancel = async () => {
         if (!cancelReason.trim()) return;
-        setCancellingId(cancelModal.id);
+        const id = cancelModal.id;
+        setCancellingId(id);
         setCancelModal({ open: false, id: null });
-        await cancelAppointment(cancelModal.id, cancelReason.trim());
-        await loadAppointments();
+        
+        const reason = cancelReason.trim();
+        setAppointments(prev => prev.map(a => a.id === id ? { ...a, status: 'cancelled', cancelReason: reason } : a));
+        
+        await cancelAppointment(id, reason);
         setCancellingId(null);
         setCancelReason('');
     };
