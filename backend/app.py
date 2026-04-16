@@ -76,7 +76,7 @@ def send_email(to_email, subject, html_body):
         msg["To"]      = to_email
         msg.attach(MIMEText(html_body, "html"))
 
-        with smtplib.SMTP_SSL("smtp.gmail.com", 465) as server:
+        with smtplib.SMTP_SSL("smtp.gmail.com", 465, timeout=3) as server:
             server.login(GMAIL_USER, GMAIL_PASSWORD)
             server.send_message(msg)
         return True
@@ -324,63 +324,63 @@ def send_status_email():
             patch["cancel_reason"] = "Cancelled by admin"
     supabase.table("appointments").update(patch).eq("id", appointment_id).execute()
 
-    # 4. Get patient email — use stored patient_email first, fallback to sign_in lookup
-    patient_email = appt.get("patient_email", "").strip()
-    patient_name  = appt.get("patient_name", "Patient")
+    # 4–6: Email notification (best-effort, must not block the success response)
+    email_sent = False
+    try:
+        # 4. Get patient email
+        patient_email = appt.get("patient_email", "").strip()
+        patient_name  = appt.get("patient_name", "Patient")
 
-    if not patient_email:
-        patient_res = supabase.table("sign_in").select("name, email").eq("id", appt["user_id"]).maybe_single().execute()
-        if not patient_res.data:
-            return jsonify({"success": False, "message": "Patient not found."}), 404
-        patient_email = patient_res.data.get("email", "")
-        patient_name  = patient_res.data.get("name", "Patient")
+        if not patient_email:
+            patient_res = supabase.table("sign_in").select("name, email").eq("id", appt["user_id"]).maybe_single().execute()
+            if patient_res.data:
+                patient_email = patient_res.data.get("email", "")
+                patient_name  = patient_res.data.get("name", "Patient")
 
-    # 4b. Get exactly the right doctor name from DB (bulletproof fix)
-    doctor_res = supabase.table("doctors").select("name").eq("id", appt.get("doctor_id")).maybe_single().execute()
-    final_doctor_name = doctor_res.data.get("name", doctor_name) if doctor_res.data else doctor_name
-    if not final_doctor_name:
-        final_doctor_name = "Your Doctor"
+        # 4b. Get doctor name from DB
+        doctor_res = supabase.table("doctors").select("name").eq("id", appt.get("doctor_id")).maybe_single().execute()
+        final_doctor_name = doctor_res.data.get("name", doctor_name) if doctor_res.data else doctor_name
+        if not final_doctor_name:
+            final_doctor_name = "Your Doctor"
 
-    # 5. Save record to appointment_emails table
-    supabase.table("appointment_emails").insert({
-        "patient_name":     patient_name,
-        "patient_email":    patient_email,
-        "doctor_name":      final_doctor_name,
-        "appointment_date": appt.get("date", ""),
-        "time_slot":        appt.get("time_slot", ""),
-        "booking_id":       appt.get("id", ""),
-        "status":           action,
-    }).execute()
+        # 5. Log to appointment_emails table
+        try:
+            supabase.table("appointment_emails").insert({
+                "patient_name":     patient_name,
+                "patient_email":    patient_email,
+                "doctor_name":      final_doctor_name,
+                "appointment_date": appt.get("date", ""),
+                "time_slot":        appt.get("time_slot", ""),
+                "booking_id":       appt.get("id", ""),
+                "status":           action,
+            }).execute()
+        except Exception as log_err:
+            print(f"[EMAIL LOG ERROR] {log_err}")
 
-    # 6. Send email to patient
-    subject = (
-        f"Appointment Confirmed — {HOSPITAL_NAME}"
-        if action == "accepted"
-        else f"Appointment Update — {HOSPITAL_NAME}"
-    )
-    sent = send_email(
-        to_email  = patient_email,
-        subject   = subject,
-        html_body = appointment_status_template(
-            patient_name = patient_name,
-            doctor_name  = final_doctor_name,
-            date         = appt.get("date", ""),
-            time_slot    = appt.get("time_slot", ""),
-            booking_id   = appt.get("id", ""),
-            status       = action,
-            doctor_note  = doctor_note
-        )
-    )
+        # 6. Send email to patient
+        if patient_email:
+            subject = (
+                f"Appointment Confirmed — {HOSPITAL_NAME}"
+                if action == "accepted"
+                else f"Appointment Update — {HOSPITAL_NAME}"
+            )
+            email_sent = send_email(
+                to_email  = patient_email,
+                subject   = subject,
+                html_body = appointment_status_template(
+                    patient_name = patient_name,
+                    doctor_name  = final_doctor_name,
+                    date         = appt.get("date", ""),
+                    time_slot    = appt.get("time_slot", ""),
+                    booking_id   = appt.get("id", ""),
+                    status       = action,
+                    doctor_note  = doctor_note
+                )
+            )
+    except Exception as email_err:
+        print(f"[EMAIL BLOCK ERROR] {email_err}")
 
-    if not sent:
-        # Status was updated but email failed — still return success for DB, warn about email
-        return jsonify({
-            "success": True,
-            "emailSent": False,
-            "message": "Status updated but email could not be sent."
-        })
-
-    return jsonify({"success": True, "emailSent": True})
+    return jsonify({"success": True, "emailSent": email_sent})
 
 
 # ═══════════════════════════════════════════════════════════════
