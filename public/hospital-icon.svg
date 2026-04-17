@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="100%" stop-color="#1e1b4b" />
+    </linearGradient>
+    <filter id="shadow" x="-5%" y="-5%" width="110%" height="110%">
+      <feDropShadow dx="0" dy="2" stdDeviation="3" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  
+  <!-- Modern rounded background -->
+  <rect width="100" height="100" rx="24" fill="url(#bg)"/>
+  
+  <!-- White Cross -->
+  <g filter="url(#shadow)">
+    <!-- Horizontal part -->
+    <rect x="22" y="42" width="56" height="16" rx="6" fill="#ffffff" />
+    <!-- Vertical part -->
+    <rect x="42" y="22" width="16" height="56" rx="6" fill="#ffffff" />
+  </g>
+</svg>
