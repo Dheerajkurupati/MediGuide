@@ -54,6 +54,9 @@ const AdminDashboard = () => {
     // Delete state
     const [deletingId, setDeletingId] = useState(null);
 
+    // Loading state: tracks which appointment row is being processed
+    const [loadingId, setLoadingId] = useState(null);
+
     // In-page toast (replaces all alert())
     const [toast, setToast] = useState({ text: '', type: '' });
     const showToast = (text, type = 'success') => {
@@ -96,7 +99,9 @@ const AdminDashboard = () => {
             setActionReason('');
             return;
         }
+        setLoadingId(appointmentId);
         const result = await updateAppointmentStatus(appointmentId, newStatus, '');
+        setLoadingId(null);
         if (!result.success) {
             showToast(result.message, 'error');
         } else {
@@ -109,7 +114,9 @@ const AdminDashboard = () => {
         if (!actionReason.trim()) return;
         const { id, newStatus } = actionModal;
         setActionModal({ open: false, id: null, newStatus: '' });
+        setLoadingId(id);
         const result = await updateAppointmentStatus(id, newStatus, actionReason.trim());
+        setLoadingId(null);
         if (!result.success) {
             showToast(result.message, 'error');
         } else {
@@ -394,6 +401,18 @@ const AdminDashboard = () => {
                                                         >
                                                             {deletingId === a.id ? '⚠️ Confirm?' : '🗑️ Delete'}
                                                         </button>
+                                                    </div>
+                                                ) : loadingId === a.id ? (
+                                                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, padding: '6px 4px' }}>
+                                                        <div style={{
+                                                            width: 18, height: 18,
+                                                            border: '2px solid #e2e8f0',
+                                                            borderTop: '2px solid #4f46e5',
+                                                            borderRadius: '50%',
+                                                            animation: 'admin-spin 0.7s linear infinite',
+                                                            flexShrink: 0
+                                                        }} />
+                                                        <span style={{ fontSize: '0.8rem', color: '#64748b', fontWeight: 500 }}>Updating…</span>
                                                     </div>
                                                 ) : (
                                                     <select
