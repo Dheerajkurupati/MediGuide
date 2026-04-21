@@ -913,3 +913,124 @@
 @keyframes spin {
     to { transform: rotate(360deg); }
 }
+
+/* ═══════════════════════════════════════
+   RESPONSIVE
+═══════════════════════════════════════ */
+@media (max-width: 1024px) {
+    .doctors-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .doctors-container {
+        padding: 1.5rem 1rem;
+    }
+
+    .doctors-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .search-wrap input {
+        padding: 0.75rem 1rem 0.75rem 2.8rem;
+    }
+
+    .doctors-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.25rem;
+    }
+
+    .modal {
+        max-width: 95%;
+        max-height: 90vh;
+    }
+
+    .slots-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+
+    .nav-links {
+        display: none;
+    }
+
+    .day-navigator {
+        flex-wrap: wrap;
+    }
+
+    .day-nav-label-wrap {
+        width: 100%;
+        order: -1;
+    }
+
+    .day-nav-arrow {
+        flex: 1;
+    }
+}
+
+@media (max-width: 480px) {
+    .doctors-container {
+        padding: 1.25rem 0.75rem;
+    }
+
+    .doctors-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .doc-avatar {
+        width: 60px;
+        height: 60px;
+        font-size: 2rem;
+    }
+
+    .modal-backdrop {
+        padding: 0;
+        align-items: flex-end;
+    }
+
+    .modal {
+        max-width: 100%;
+        border-radius: 24px 24px 0 0;
+        max-height: 85vh;
+    }
+
+    .modal-header {
+        padding: 1.5rem;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .slots-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .slot-label-row {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.5rem;
+    }
+
+    .refresh-btn {
+        align-self: flex-end;
+    }
+
+    .success-actions {
+        flex-direction: column;
+    }
+
+    .btn-primary, .btn-outline {
+        width: 100%;
+    }
+
+    .nav-inner {
+        padding: 0.75rem 1rem;
+    }
+
+    .results-count-row {
+        flex-direction: column;
+        gap: 0.5rem;
+        align-items: center;
+    }
+}

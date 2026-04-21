@@ -575,23 +575,60 @@
 /* ═══════════════════════════════════════
    RESPONSIVE
 ═══════════════════════════════════════ */
+
+/* ── Tablet (≤ 768px) ── */
 @media (max-width: 768px) {
-  .features-section {
-    max-height: none;
+  /* Navbar: hide extra space, smaller padding */
+  .nav-container {
+    padding: 0.85rem 1.25rem;
   }
 
-  .feature-photo-card {
-    min-height: 300px;
+  /* Hero */
+  .hero-content {
+    padding: 3rem 1.25rem;
+  }
+
+  .hero-description {
+    font-size: 1rem;
+  }
+
+  .btn {
+    padding: 0.85rem 1.8rem;
+    font-size: 0.95rem;
   }
 
   .hero-stats {
-    flex-direction: column;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 1rem;
+    padding: 1rem 1.25rem;
   }
 
   .stat-divider {
-    width: 60px;
-    height: 1px;
+    display: none;
+  }
+
+  /* Sections */
+  .how-section {
+    padding: 4rem 1.25rem;
+  }
+
+  .features-section {
+    max-height: none;
+    grid-template-columns: 1fr;
+  }
+
+  .feature-photo-card {
+    min-height: 260px;
+  }
+
+  .quote-section {
+    padding: 4rem 1.25rem;
+  }
+
+  .support-section {
+    padding: 4rem 1.25rem;
   }
 
   .support-form-row {
@@ -601,4 +638,106 @@
   .support-form {
     padding: 1.5rem;
   }
+
+  .contact-section {
+    padding: 4rem 1.25rem;
+  }
+
+  .section-title {
+    font-size: 1.75rem;
+  }
 }
+
+/* ── Mobile (≤ 480px) ── */
+@media (max-width: 480px) {
+  /* Navbar: only logo + login visible */
+  .nav-container {
+    padding: 0.75rem 1rem;
+  }
+
+  .logo {
+    font-size: 1.2rem;
+  }
+
+  .logo-icon {
+    font-size: 1.6rem;
+  }
+
+  .admin-link {
+    padding: 0.45rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  /* Hero */
+  .hero-content {
+    padding: 2.5rem 1rem;
+  }
+
+  .hero-pill {
+    font-size: 0.78rem;
+    padding: 0.3rem 0.85rem;
+  }
+
+  .hero-description {
+    font-size: 0.95rem;
+    margin-bottom: 1.75rem;
+  }
+
+  .cta-buttons {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.75rem;
+  }
+
+  .btn {
+    padding: 0.9rem 1.5rem;
+    font-size: 0.95rem;
+    width: 100%;
+  }
+
+  .hero-stats {
+    gap: 0.75rem;
+    padding: 0.85rem 1rem;
+  }
+
+  .stat strong {
+    font-size: 1.25rem;
+  }
+
+  /* How it works */
+  .how-section {
+    padding: 3rem 1rem;
+  }
+
+  .steps-row {
+    grid-template-columns: 1fr;
+    gap: 2.5rem;
+  }
+
+  /* Support */
+  .support-section {
+    padding: 3rem 1rem;
+  }
+
+  .support-form {
+    padding: 1.25rem;
+    border-radius: 14px;
+  }
+
+  /* Contact */
+  .contact-section {
+    padding: 3rem 1rem;
+  }
+
+  .contact-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .section-title {
+    font-size: 1.5rem;
+  }
+
+  .section-sub {
+    font-size: 0.9rem;
+  }
+}

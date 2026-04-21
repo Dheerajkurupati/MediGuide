@@ -443,6 +443,10 @@
 
 /* ── Responsive ── */
 @media (max-width: 768px) {
+    .profile-container {
+        padding: 1.5rem 1rem;
+    }
+
     .profile-stats {
         grid-template-columns: repeat(2, 1fr);
     }
@@ -463,6 +467,55 @@
 
     .profile-header {
         flex-direction: column;
+        text-align: center;
+    }
+
+    /* Nav links hidden on tablet */
+    .profile-page .nav-links {
+        display: none;
+    }
+
+    .mini-appts-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .profile-container {
+        padding: 1.25rem 0.75rem;
+    }
+
+    .profile-avatar {
+        width: 64px;
+        height: 64px;
+        font-size: 1.5rem;
+    }
+
+    .profile-header-info h1 {
+        font-size: 1.3rem;
+    }
+
+    .profile-stats {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 0.65rem;
+    }
+
+    .p-stat strong {
+        font-size: 1.3rem;
+    }
+
+    .card-header {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    .edit-actions {
+        flex-direction: column;
+    }
+
+    .save-btn, .cancel-btn {
+        width: 100%;
         text-align: center;
     }
 }

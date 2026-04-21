@@ -689,24 +689,33 @@
     }
 
     .dashboard-nav {
-        flex-direction: column;
-        gap: 0.75rem;
+        flex-wrap: wrap;
+        gap: 0.5rem;
         padding: 0.75rem 1rem;
     }
 
     .nav-center {
         width: 100%;
+        justify-content: center;
     }
 
     .nav-link {
         flex: 1;
         justify-content: center;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .nav-right {
+        width: 100%;
+        justify-content: space-between;
     }
 
     .hero-banner {
         flex-direction: column;
         text-align: center;
         padding: 2rem 1.5rem;
+        gap: 1.25rem;
     }
 
     .hero-sub {
@@ -733,5 +742,56 @@
 
     .upcoming-banner-meta {
         gap: 1.25rem;
+    }
+
+    .quick-actions {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 480px) {
+    .dashboard-nav {
+        padding: 0.65rem 0.75rem;
+    }
+
+    .nav-link {
+        font-size: 0.78rem;
+        padding: 0.45rem 0.5rem;
+    }
+
+    .hero-banner {
+        padding: 1.5rem 1rem;
+    }
+
+    .hero-name {
+        font-size: 1.5rem;
+    }
+
+    .hero-greeting {
+        font-size: 0.85rem;
+    }
+
+    .hero-btn {
+        font-size: 0.82rem;
+        padding: 0.6rem 1rem;
+    }
+
+    .dashboard-stats {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+    }
+
+    .dash-stat-val {
+        font-size: 1.35rem;
+    }
+
+    .upcoming-banner-meta {
+        flex-direction: column;
+        gap: 0.85rem;
+    }
+
+    .no-upcoming-banner {
+        flex-direction: column;
+        gap: 0.75rem;
     }
 }
