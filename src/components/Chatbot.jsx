@@ -216,6 +216,26 @@ const Chatbot = () => {
                                         )
                                     )}
 
+                                    {/* Emergency call buttons — only for EMERGENCY decisions */}
+                                    {msg.type === 'bot' && msg.decision === 'EMERGENCY' && (
+                                        <div className="emergency-call-btns">
+                                            <a
+                                                href="tel:108"
+                                                className="emergency-call-btn ambulance"
+                                                aria-label="Call 108 Ambulance"
+                                            >
+                                                🚨 Call 108 — Ambulance
+                                            </a>
+                                            <a
+                                                href="tel:+919014636588"
+                                                className="emergency-call-btn hospital"
+                                                aria-label="Call CityCare Hospital"
+                                            >
+                                                📞 Call Our Hospital
+                                            </a>
+                                        </div>
+                                    )}
+
                                     {/* Book Appointment CTA — shown after any final recommendation */}
                                     {msg.type === 'bot' && isFinalDecision(msg.decision) && (
                                         <button

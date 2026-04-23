@@ -259,6 +259,60 @@
     transform: translateY(-1px);
 }
 
+/* ── Emergency Call Buttons ─── */
+.emergency-call-btns {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 10px;
+}
+
+.emergency-call-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 11px 16px;
+    border-radius: 12px;
+    font-size: 0.88rem;
+    font-weight: 700;
+    text-decoration: none;
+    width: 100%;
+    text-align: center;
+    transition: transform 0.2s, box-shadow 0.2s, opacity 0.2s;
+    cursor: pointer;
+    letter-spacing: 0.02em;
+}
+
+.emergency-call-btn.ambulance {
+    background: linear-gradient(135deg, #dc2626 0%, #ef4444 100%);
+    color: #fff;
+    box-shadow: 0 3px 14px rgba(220, 38, 38, 0.45);
+    animation: emergencePulse 1.8s ease-in-out infinite;
+}
+
+.emergency-call-btn.ambulance:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(220, 38, 38, 0.55);
+    animation: none;
+}
+
+.emergency-call-btn.hospital {
+    background: linear-gradient(135deg, #1d4ed8 0%, #2563eb 100%);
+    color: #fff;
+    box-shadow: 0 3px 14px rgba(37, 99, 235, 0.35);
+}
+
+.emergency-call-btn.hospital:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.5);
+}
+
+@keyframes emergencePulse {
+    0%, 100% { box-shadow: 0 3px 14px rgba(220, 38, 38, 0.45); }
+    50%       { box-shadow: 0 3px 22px rgba(220, 38, 38, 0.75); }
+}
+
 /* ── Book Appointment CTA ─── */
 .book-appt-btn {
     background: linear-gradient(135deg, #059669 0%, #10b981 100%);
