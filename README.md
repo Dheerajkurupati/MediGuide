@@ -1,6 +1,6 @@
 # CityCare Hospital & MediGuide Chatbot
 Deployment Link: 
-<a href="https://your-deployment-link.com" target="_blank" rel="noopener noreferrer">
+<a href="https://citycare-psi.vercel.app/" target="_blank" rel="noopener noreferrer">
   Live Demo
 </a>
 
